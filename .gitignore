@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Claude Code per-user overrides
+.claude/settings.local.json
+
+# If you do NOT want generated artifacts checked in, uncomment:
+# docs/briefs/
+# docs/prd/
+# docs/architecture/
+# docs/stories/
+# docs/adrs/
+# docs/postmortems/
+# docs/migrations/
+# docs/data-models/
+# REPOMAP.md
