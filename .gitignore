@@ -10,6 +10,9 @@ Thumbs.db
 # Claude Code per-user overrides
 .claude/settings.local.json
 
+# Local scratch — cloned repos for analysis, drafts, etc.
+throwaway/
+
 # If you do NOT want generated artifacts checked in, uncomment:
 # docs/briefs/
 # docs/prd/
