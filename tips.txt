@@ -1,0 +1,209 @@
+================================================================================
+  TIPS FOR USING CLAUDE CODE WITH THIS SCAFFOLD
+================================================================================
+
+Claude Code's context window is large (~200K tokens) but fills fast with
+noise. The tips below keep it clean and make this scaffold's typed-artifact
+workflow pay off.
+
+
+--------------------------------------------------------------------------------
+  1.  KEEP CLAUDE.md SHARP
+--------------------------------------------------------------------------------
+
+CLAUDE.md loads on every session start. Generic advice ("write clean code")
+and copy-pasted docs are dead weight. Use the test: remove the line — if
+nothing changes downstream, delete it. Aim for under 200 lines.
+
+This repo's CLAUDE.md is the OPERATING PRINCIPLES file. Project conventions
+that aren't principles (file paths, naming, agent locations) live in code,
+not in CLAUDE.md.
+
+
+--------------------------------------------------------------------------------
+  2.  REFERENCE FILES, DON'T INLINE THEM
+--------------------------------------------------------------------------------
+
+Instead of pasting 40 lines of API docs into CLAUDE.md, write
+    See @docs/architecture/user-service.md when working with user service
+The detail stays available without loading every session.
+
+This scaffold already does this — story files quote slices of architecture,
+agents reference templates/*.tmpl.md, brownfield work references REPOMAP.md.
+Match that pattern in any local additions.
+
+
+--------------------------------------------------------------------------------
+  3.  PLAN BEFORE YOU BUILD
+--------------------------------------------------------------------------------
+
+Every Claude Code message carries your message + history + file context +
+CLAUDE.md + tool outputs. All of it, every time. Prompting your way to a
+solution from a vague start multiplies context fast.
+
+For non-trivial work in this scaffold:
+
+  - New project:           /greenfield:kickoff "<idea>"
+                           (analyst → PM → architect → planner)
+  - Existing repo:         /brownfield:onboard first, then
+                           /brownfield:feature or /brownfield:bugfix
+  - Single chunk:          /story then /implement
+  - High-uncertainty:      /challenge against the architecture
+                           before locking it
+
+The architect→editor split in /implement already enforces this: architect
+plans against a story, implementer applies diffs.
+
+
+--------------------------------------------------------------------------------
+  4.  AUDIT AND DISCONNECT MCP SERVERS
+--------------------------------------------------------------------------------
+
+Run /context to see where tokens go. Run /mcp to see connected servers.
+Each MCP server loads its tools into context on every message — even if you
+don't use them this session.
+
+Disconnect what you don't need at session start. If you can replace a
+server with a CLI call, do that.
+
+
+--------------------------------------------------------------------------------
+  5.  RUN /compact BEFORE THE WINDOW FILLS, NOT AFTER
+--------------------------------------------------------------------------------
+
+The built-in compaction is mechanical, not surgical. Run /compact yourself
+at ~60% usage, after a logical phase completes, or after large outputs
+(generated code, logs, file listings).
+
+Never compact mid-task or right before a critical instruction runs. Use
+/clear to start fresh between unrelated tasks — your files, this repo, and
+CLAUDE.md stay intact.
+
+
+--------------------------------------------------------------------------------
+  6.  ONE DOMAIN PER SESSION
+--------------------------------------------------------------------------------
+
+Backend, frontend, and infra work share almost no context. Mixing them in
+one session bloats the window and degrades focus. Use /clear between
+domains.
+
+This scaffold's typed artifacts make session-resets cheap: pick up a story
+file, the relevant architecture slice, and REPOMAP.md, and you're caught up
+in seconds — without dragging the prior session's chat forward.
+
+
+--------------------------------------------------------------------------------
+  7.  USE THIS SCAFFOLD'S COMMANDS FOR REPEATED WORKFLOWS
+--------------------------------------------------------------------------------
+
+Any workflow you run more than once belongs in a named command. This
+scaffold ships these (full list in CLAUDE.md):
+
+  /greenfield:kickoff "<idea>"     Start a project from an idea
+  /brownfield:onboard              Onboard to an unfamiliar repo
+  /implement <story-file>          Build a story
+  /review                          Self-review before PR
+  /ship                            Finalize a PR
+  /adr "<title>"                   Record a decision
+  /migrate                         Plan a migration
+  /postmortem                      Investigate an incident
+  /release                         Cut a release
+  /aside "<question>"              Side question without losing place
+  /checkpoint create <label>       Save a restore point
+  /learn "<topic>"                 Capture a transferable lesson
+  /challenge <doc>                 Stress-test a plan
+
+Add your own under .claude/commands/. Namespace via subdirs
+(foo/bar.md → /foo:bar).
+
+
+--------------------------------------------------------------------------------
+  8.  USE NAMED CONTEXTS FOR THE SAME PROJECT, DIFFERENT INTENT
+--------------------------------------------------------------------------------
+
+This scaffold ships contexts/ — small "mode" prompts you can inject at
+session start:
+
+  claude --system-prompt "$(cat contexts/dev.md)"       active build mode
+  claude --system-prompt "$(cat contexts/review.md)"    skeptical, read-only
+  claude --system-prompt "$(cat contexts/research.md)"  verify before stating
+  claude --system-prompt "$(cat contexts/debug.md)"     reproduce → hypothesize
+
+These don't replace CLAUDE.md — they layer on top of it. Useful when the
+same project needs different stances day to day.
+
+
+--------------------------------------------------------------------------------
+  9.  SAVE NAMED SUMMARIES INSTEAD OF DRAGGING HISTORY
+--------------------------------------------------------------------------------
+
+At the end of any session with useful decisions, ask:
+
+    Summarize the key decisions from this conversation as "TASK_NAME".
+
+Next session:
+
+    Use TASK_NAME.
+
+You get the knowledge without dragging raw conversation forward.
+
+For multi-session work, this scaffold's story files
+(docs/stories/<NNN>-<slug>.md) serve the same purpose, with the bonus of
+being git-tracked. For transferable insights (not just task state), use
+/learn — it writes to docs/learnings/.
+
+
+--------------------------------------------------------------------------------
+ 10.  USE "DO NOT" CONSTRAINTS IN YOUR PROMPTS
+--------------------------------------------------------------------------------
+
+Claude Code tends to over-engineer. When refactoring or fixing a focused
+issue, be explicit:
+
+    Do NOT:
+    - add new dependencies
+    - refactor unrelated files
+    - change naming conventions
+
+This pairs with this scaffold's CLAUDE.md Rule 3 (Surgical Changes) —
+constraints stop work you'd have to correct, which itself adds context.
+
+
+--------------------------------------------------------------------------------
+ 11.  RESOLVE CONTRADICTIONS BEFORE THEY CAUSE LOOPS
+--------------------------------------------------------------------------------
+
+If you've revised a decision mid-session, you may have two conflicting
+summaries in context. Claude will pick one without knowing which is
+current. Mark the final state explicitly:
+
+    Auth (FINAL):
+    - JWT
+    - 1h access, 30d refresh
+    - httpOnly cookies
+
+One correction loop costs more tokens than the original task. The
+typed-artifact-over-chat principle in CLAUDE.md exists specifically to
+prevent this drift — once an architecture or PRD is written, it's the
+source of truth, not the chat.
+
+
+--------------------------------------------------------------------------------
+ 12.  MATCH SCOPE TO ARTIFACT DEPTH
+--------------------------------------------------------------------------------
+
+CLAUDE.md includes a tier table (Small / Medium / Large / Complex) for
+right-sizing the work. The shorthand:
+
+  Small     ≤3 files, one clear change      Edit directly; no story file
+  Medium    half-day to two days            /story then /implement
+  Large     multiple stories                Full PRD → architecture → stories
+  Complex   cross-system, novel             Add /challenge before stories
+
+If a "small" task starts revealing more than 5 atomic steps, STOP and
+create a formal story. Don't keep pushing on an under-sized plan.
+
+================================================================================
+  end
+================================================================================
