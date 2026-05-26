@@ -192,6 +192,7 @@ When the user asks for app-context operations (active file, open in editor, dail
 
 Load these only when needed, not on every invocation.
 
+- [Knowledge Base](resources/knowledge-base.md) - read when building up the vault during normal work (structure, note shape, tags, write discipline, docs/-vs-vault split). This is the convention agents and commands follow.
 - [Tool Patterns](resources/tool-patterns.md) - read when you need a tool's response shape, mode details, or the move_note vs move_file decision
 - [Obsidian Conventions](resources/obsidian-conventions.md) - read when creating/writing note content (link syntax, frontmatter fields, daily note format, template variables)
 - [Git Sync](resources/git-sync.md) - read when user asks for backup/sync/store-vault workflows with git/gh
