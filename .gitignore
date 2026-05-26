@@ -13,6 +13,14 @@ Thumbs.db
 # Local scratch — cloned repos for analysis, drafts, etc.
 throwaway/
 
+# Vendored MCP server — runtime deps are installed locally, never committed
+vendor/**/node_modules/
+
+# Obsidian local workspace state (vault note tracking is your call; cruft isn't)
+memory/**/.obsidian/workspace*.json
+memory/**/.obsidian/cache
+memory/**/.trash/
+
 # If you do NOT want generated artifacts checked in, uncomment:
 # docs/briefs/
 # docs/prd/
