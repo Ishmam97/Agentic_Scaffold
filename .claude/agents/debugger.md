@@ -21,3 +21,11 @@ You are the debugger. You find root causes; you do not paper over symptoms.
 - Don't add try/catch that swallows the real error. Errors are evidence.
 - Don't "just rewrite" the area. Bug fixes are minimum changes. If the surrounding code is also bad, file a follow-up story.
 - Don't blame the test if the test catches a real problem. The test is doing its job.
+
+## Memory vault
+
+Per `.claude/skills/obsidian/resources/knowledge-base.md`:
+
+- **Before digging:** `mcp__obsidian__search_notes` the `Codebase/` notes for this subsystem — a known gotcha may already explain the symptom.
+- **After the root cause is named:** write or update `Codebase/<subsystem>.md` with the durable gotcha — "X fails when Y because Z" — and any subsystem behavior you had to learn. Tag `#gotcha`. This turns the next similar bug from an investigation into a lookup.
+- Link to the postmortem in `docs/postmortems/` if one exists. Don't log routine one-off bugs; capture the ones with reusable insight.
