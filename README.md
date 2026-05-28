@@ -70,7 +70,7 @@ The scaffold ships with an Obsidian-backed **memory vault** for durable, cross-s
 
 **How it's wired:**
 
-- **Vault:** `memory/agentic swe/` — a normal Obsidian vault (`.md` files + `.obsidian/` config). Open it in Obsidian directly.
+- **Vault:** `memory/` — a normal Obsidian vault (`.md` files + `.obsidian/` config). Open it in Obsidian directly.
 - **MCP server:** [`@bitbonsai/mcpvault`](https://github.com/bitbonsai/mcpvault) (MIT), vendored at `vendor/mcpvault/`. Exposes 15 tools (`read_note`, `write_note`, `patch_note`, `search_notes`, `manage_tags`, …) with frontmatter-safe writes.
 - **Config:** committed `.mcp.json` launches the server via `node vendor/mcpvault/dist/server.js` against the vault. Paths use `${CLAUDE_PROJECT_DIR:-.}` so the config is portable.
 - **Skill:** `.claude/skills/obsidian/` routes vault operations across MCP, the Obsidian CLI, and git sync.

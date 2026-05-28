@@ -5,7 +5,7 @@
       "command": "node",
       "args": [
         "${CLAUDE_PROJECT_DIR:-.}/vendor/mcpvault/dist/server.js",
-        "${CLAUDE_PROJECT_DIR:-.}/memory/agentic swe"
+        "${CLAUDE_PROJECT_DIR:-.}/memory"
       ],
       "env": {}
     }

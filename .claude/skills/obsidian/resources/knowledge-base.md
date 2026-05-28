@@ -1,6 +1,6 @@
 # Knowledge-base convention
 
-How agents and commands build up the `memory/agentic swe/` vault as work happens. This is the **single source of truth** for vault structure — agents reference it instead of each restating the layout.
+How agents and commands build up the `memory/` vault as work happens. This is the **single source of truth** for vault structure — agents reference it instead of each restating the layout.
 
 ## The split (read this first)
 
@@ -12,7 +12,7 @@ Rule of thumb: if it's a deliverable for one task, it goes in `docs/`. If it's k
 ## Structure
 
 ```
-memory/agentic swe/
+memory/
   Home.md            # MOC / dashboard — entry point, links to everything live
   Concepts/          # one note per domain or technical concept (the glossary + ideas)
   Decisions/         # decision-in-context notes — the narrative "why"; link to the ADR

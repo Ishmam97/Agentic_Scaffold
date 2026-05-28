@@ -15,7 +15,7 @@ metadata:
 
 ## In this scaffold
 
-The project's Obsidian vault lives at `memory/agentic swe/` and is the **durable memory** for this repo — long-lived notes, decisions, and cross-session context. It complements (does not replace) the typed artifacts in `docs/`:
+The project's Obsidian vault lives at `memory/` and is the **durable memory** for this repo — long-lived notes, decisions, and cross-session context. It complements (does not replace) the typed artifacts in `docs/`:
 
 - **`docs/`** holds the formal, per-task artifacts (PRDs, architecture, stories, ADRs). These are the handoff medium between agents.
 - **The vault** holds the connective tissue — running notes, linked concepts, daily logs, "why we did X" that spans tasks. Use `[[wikilinks]]` to relate notes; the vault's value is the graph, not any single note.

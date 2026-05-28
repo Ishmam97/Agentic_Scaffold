@@ -42,7 +42,7 @@ Treat it as a **toolkit**, not a pipeline — invoke what you need, when you nee
 
 ## Memory vault
 
-An Obsidian vault at `memory/agentic swe/` is the project's durable memory, reachable via the `obsidian` MCP server (`.mcp.json`) and the `.claude/skills/obsidian/` skill. Use it for cross-session, cross-task knowledge: running notes, linked concepts, decisions-in-context, daily logs. Use `docs/` for formal per-task artifacts (PRD, architecture, stories, ADRs). Rule of thumb: **`docs/` is the handoff medium; the vault is the long-term memory.** Prefer the MCP tools for vault reads/writes (frontmatter-safe); they're sandboxed to the vault.
+An Obsidian vault at `memory/` is the project's durable memory, reachable via the `obsidian` MCP server (`.mcp.json`) and the `.claude/skills/obsidian/` skill. Use it for cross-session, cross-task knowledge: running notes, linked concepts, decisions-in-context, daily logs. Use `docs/` for formal per-task artifacts (PRD, architecture, stories, ADRs). Rule of thumb: **`docs/` is the handoff medium; the vault is the long-term memory.** Prefer the MCP tools for vault reads/writes (frontmatter-safe); they're sandboxed to the vault.
 
 ## When to invoke what
 
