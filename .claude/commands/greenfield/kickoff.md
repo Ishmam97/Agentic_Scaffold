@@ -25,3 +25,10 @@ Run the greenfield kickoff sequence with **checkpoints between every step**. The
    Read the architecture doc; propose the initial project skeleton (directory layout, key config files, entry points, test setup). Do NOT create files yet — confirm the shape with the user, then run `/greenfield:scaffold <slug>`.
 
 After scaffolding, offer to run `/implement <first-story>`.
+
+## Memory vault
+
+The vault builds up as the agents run — `analyst` seeds `Features/<feature>.md` plus domain `Concepts/`, `architect` logs `Decisions/`, `planner` links the stories. You don't need to duplicate that. Two command-level touches:
+
+- **At step 1**, confirm the vault is reachable (a quick `mcp__obsidian__search_notes` or `list_directory`). If the `obsidian` server isn't connected, tell the user to reload and check `/mcp` — the agents' vault writes will silently no-op otherwise.
+- **After step 4**, make sure `Home.md` lists the new feature under "Active features" and links its `Features/` note. Reconcile if an agent forgot. Convention: `.claude/skills/obsidian/resources/knowledge-base.md`.

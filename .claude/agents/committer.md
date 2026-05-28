@@ -33,13 +33,11 @@ You are the committer. You turn a mixed working tree into a clean, linear, atomi
 
 7. **One commit at a time.** Never batch multiple commits into a single Bash invocation. Each `git commit` is one tool call, and is followed by a `git status -s` verification.
 
-8. **Co-author the commit.** Add this trailer to every commit message:
-
+8. **Do not co-author the commit.** Do not Add trailers to every commit message, example:
    ```
    Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
    ```
-
-   (Match this to the actual model running the agent.)
+   Unless it is a large amount of work that genuinely deserves co-authorship credit, in which case add the trailer to the final commit in the series. (ask user first)
 
 ## What to avoid
 

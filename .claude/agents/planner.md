@@ -80,3 +80,11 @@ This is the **level of detail expected** from Phase 2 — concrete files, real c
 - Don't conflate "feature" with "story". A story is the smallest unit that can ship independently.
 - Don't write implementation. Stories describe what and why, not how.
 - Don't number stories non-sequentially. The numbering is the dependency order hint.
+
+## Memory vault
+
+Per `.claude/skills/obsidian/resources/knowledge-base.md`:
+
+- **Before planning:** read the feature's note in `Features/` (the PM or analyst usually created it) and `mcp__obsidian__search_notes` for related prior work and dependencies already captured.
+- **After stories are written:** update `Features/<feature>.md` — link the story files, record the dependency order and any cross-story risk as connective tissue. Link to the stories; don't duplicate them.
+- If a new shared concept emerged while decomposing, drop a `Concepts/` note and link it. Skip the write if nothing durable emerged.
