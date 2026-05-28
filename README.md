@@ -77,12 +77,22 @@ The scaffold ships with an Obsidian-backed **memory vault** for durable, cross-s
 
 **One-time setup after cloning:**
 
-```bash
-cd vendor/mcpvault && npm install   # installs runtime deps (node_modules is gitignored)
-# dist/ is committed, so no build needed; to rebuild: npm run build
-```
+1. **Install Obsidian** (free desktop app — needed to view/edit the vault as a human; the MCP server itself runs headless and works without it).
 
-Then reload Claude Code so it picks up `.mcp.json`. Verify with `/mcp` — you should see the `obsidian` server connected.
+   - **macOS:** `brew install --cask obsidian` — or download the `.dmg` from [obsidian.md/download](https://obsidian.md/download).
+   - **Windows:** `winget install Obsidian.Obsidian` — or grab the installer from [obsidian.md/download](https://obsidian.md/download).
+   - **Linux:** AppImage / `.deb` / `.rpm` from [obsidian.md/download](https://obsidian.md/download), or `flatpak install flathub md.obsidian.Obsidian`, or `snap install obsidian --classic`.
+
+2. **Install MCP server deps:**
+
+   ```bash
+   cd vendor/mcpvault && npm install   # installs runtime deps (node_modules is gitignored)
+   # dist/ is committed, so no build needed; to rebuild: npm run build
+   ```
+
+3. **Open the vault in Obsidian:** launch Obsidian → *Open folder as vault* → pick this repo's `memory/` directory. The `.obsidian/` config is already committed, so workspace and plugin settings come along.
+
+4. **Reload Claude Code** so it picks up `.mcp.json`. Verify with `/mcp` — you should see the `obsidian` server connected.
 
 **Pointing at your own vault:** edit the vault path in `.mcp.json` (the second `args` entry). The default points at `memory/` itself; change it if you keep your vault elsewhere.
 
