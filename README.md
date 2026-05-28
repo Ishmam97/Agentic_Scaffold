@@ -84,7 +84,7 @@ cd vendor/mcpvault && npm install   # installs runtime deps (node_modules is git
 
 Then reload Claude Code so it picks up `.mcp.json`. Verify with `/mcp` — you should see the `obsidian` server connected.
 
-**Pointing at your own vault:** edit the vault path in `.mcp.json` (the second `args` entry). The folder name `agentic swe` is this project's default; change it to your vault's folder under `memory/`.
+**Pointing at your own vault:** edit the vault path in `.mcp.json` (the second `args` entry). The default points at `memory/` itself; change it if you keep your vault elsewhere.
 
 > The contents of `memory/` are left untracked by default — your notes are yours. If you want them in git, the `obsidian` skill has a git-sync mode (commit/pull/push, no force) that can manage the vault as its own synced store.
 
