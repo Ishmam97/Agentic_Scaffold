@@ -9,6 +9,9 @@ Story to implement:
 
 Run the architect→editor pipeline:
 
+0. **Recall prior lessons — `learnings-researcher` subagent.**
+   Before planning, invoke `learnings-researcher` on the story's area. Hand any Critical/Relevant findings to the architect step so the plan accounts for known gotchas instead of re-discovering them.
+
 1. **Architect step — `architect` subagent.**
    Read the story file at `docs/stories/<NNN>-<slug>.md`. Invoke `architect` (or think hard yourself if the story is small) to produce a concrete *implementation plan*: which files change, in what order, what each change does, what tests to add. **Do not write code in this step.**
 
