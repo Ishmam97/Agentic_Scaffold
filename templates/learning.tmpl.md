@@ -1,45 +1,40 @@
-# Learning: <one-line takeaway>
+---
+track: bug                  # bug | knowledge
+title: <one-line takeaway>
+date: YYYY-MM-DD
+component: <subsystem/area — reuse existing values: auth, build, ci, data, api, ...>
+tags: [<kebab>, <kebab>]    # searchable keywords; reuse before inventing
+severity: medium            # low | medium | high — how much this bites
+# --- bug track only (delete this block for knowledge track) ---
+problem_type: logic         # logic | config | dependency | race | integration | performance | tooling | environment
+symptoms: <the observable failure — how it shows up>
+root_cause: <the actual cause, not the symptom>
+resolution: <what fixed it>
+# --- knowledge track only (use instead of the bug block) ---
+# applies_when: [<situation where this guidance is relevant>, ...]
+vault_note: "[[<linked vault note title>]]"   # the durable note /learn also wrote
+---
 
-**Date:** YYYY-MM-DD
-**Session topic:** `<what we were working on when this surfaced>`
-**Affects:** `<which agents / templates / commands / docs this might inform>`
+# <one-line takeaway>
 
 ## What happened
-
-2–4 sentences. The concrete situation: what we tried, what surprised us, what the resolution was. Link to commits, files, error messages where useful.
+2–4 sentences: the concrete situation — what was tried, what surprised, the resolution. Link real files, commits, error messages.
 
 ## What I learned
+The transferable rule or heuristic a future session can act on. **One paragraph max.** If you can't compress it, you haven't extracted the lesson — you're still narrating.
 
-The transferable insight, stated as a rule or heuristic a future session could act on. **One paragraph max.** If you can't compress it to a paragraph, you haven't extracted the lesson yet — you're still narrating the session.
-
-## Why this is worth saving
-
-Justify in one sentence: why this isn't obvious, why it's reusable, why it isn't already in `CLAUDE.md` or another doc. If you can't, this isn't a learning — delete the file.
-
-## Concrete signals
-
-How to spot the situation this learning addresses next time:
-
+## Signals — how to spot this next time
 - ...
 - ...
 
-## Suggested updates
-
-If this learning should propagate into the scaffold itself, name the specific edits. **Don't make them in this command** — let the user decide.
-
+## Suggested updates (do not auto-apply)
+Where this should propagate into the scaffold. Name specific edits; the user decides which become real.
 - `CLAUDE.md` — `<proposed addition>`
 - `.claude/agents/<name>.md` — `<proposed addition>`
 - `templates/<name>.tmpl.md` — `<proposed addition>`
 
-## Anti-patterns to avoid
-
-Things the situation makes tempting but shouldn't be done:
-
-- ...
-- ...
-
 ## Related
-
+- Vault note: `[[<title>]]`
 - ADR: `docs/adrs/<NNNN>-<slug>.md` (if relevant)
-- Story: `docs/stories/<NNN>-<slug>.md` (if surfaced during implementation)
+- Story / postmortem: `docs/...`
 - Other learnings: `docs/learnings/<date>-<slug>.md`
