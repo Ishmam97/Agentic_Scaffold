@@ -4,28 +4,34 @@ A Claude Code-native scaffold for full-lifecycle software engineering. Brings op
 
 ## What you get
 
-- **18 specialist subagents** (`.claude/agents/`) — analyst, pm, architect, tech-researcher, planner, implementer, test-author, code-reviewer, security-auditor, perf-auditor, debugger, refactorer, docs-writer, repo-mapper, migration-planner, release-manager, data-modeler, devils-advocate.
-- **21 slash commands** (`.claude/commands/`) for greenfield (`/greenfield:kickoff`, `/greenfield:prd`, …), brownfield (`/brownfield:onboard`, `/brownfield:feature`, …), everyday operations (`/implement`, `/review`, `/ship`, `/adr`, `/migrate`, `/release`, `/postmortem`, `/story`), and session utilities (`/aside`, `/checkpoint`, `/learn`, `/challenge`).
-- **15 typed artifact templates** (`templates/`) — PRDs, architecture docs, stories, ADRs, migrations, changelogs, postmortems, data models, briefs, repo maps, PR bodies, plus incident reports, runbooks, learnings, and a stack-mappings reference.
+- **20 specialist subagents** (`.claude/agents/`) — analyst, pm, architect, tech-researcher, planner, implementer, test-author, code-reviewer, security-auditor, perf-auditor, debugger, refactorer, docs-writer, repo-mapper, migration-planner, release-manager, committer, data-modeler, devils-advocate, learnings-researcher.
+- **22 slash commands** (`.claude/commands/`) for ideation (`/brainstorm`), greenfield (`/greenfield:kickoff`, `/greenfield:prd`, …), brownfield (`/brownfield:onboard`, `/brownfield:feature`, …), everyday operations (`/implement`, `/review`, `/ship`, `/adr`, `/migrate`, `/release`, `/postmortem`, `/story`), and session utilities (`/aside`, `/checkpoint`, `/learn`, `/challenge`).
+- **3 skills** (`.claude/skills/`) — `test-driven-development` and `systematic-debugging` are disciplines that load on trigger and back the implementer/test-author/debugger; `obsidian` drives the memory vault.
+- **A `SessionStart` hook** (`.claude/hooks/`) — injects a scaffold orientation into every session, so commands and skills are discoverable from turn one. No setup required.
+- **15 typed artifact templates** (`templates/`) — PRDs, architecture docs, stories, ADRs, migrations, changelogs, postmortems, data models, briefs, repo maps, PR bodies, plus incident reports, runbooks, learnings (typed two-track), and a stack-mappings reference.
 - **4 mode contexts** (`contexts/`) — `dev`, `review`, `research`, `debug`. Layer on top of `CLAUDE.md` via `claude --system-prompt "$(cat contexts/<mode>.md)"` when the same project needs a different stance.
+- **A scaffold index** (`.claude/INDEX.md`) — the one-line map of every agent, command, skill, hook, and template; the place to look when picking a tool.
 - **A `REPOMAP.md` workflow** for brownfield grounding — agents reference it instead of re-deriving structure each session.
 
 ## Quick start
 
-1. Clone as a starter:
+1. **Clone as a starter:**
    ```bash
    git clone <this-repo-url> my-project
    cd my-project
    rm -rf .git && git init
    ```
 
-2. Open in Claude Code. Verify slash commands appear: type `/` and look for the `greenfield:` and `brownfield:` groups.
+2. **Open in Claude Code.** The `SessionStart` hook injects a scaffold orientation automatically. Type `/` to confirm the `greenfield:` and `brownfield:` command groups appear. The full tool map is **[`.claude/INDEX.md`](./.claude/INDEX.md)** — start there to pick a tool.
 
-3. Pick your starting point:
+3. **Pick your starting point:**
+   - **Rough idea, scope still fuzzy:** `/brainstorm "real-time pair-coding app"` — explores it one question at a time, then hands off to a brief/PRD.
    - **New project:** `/greenfield:kickoff "build a real-time pair-coding app"`
    - **Existing repo:** `/brownfield:onboard`
 
-4. Read the **Claude Code tips** — open [`tips.html`](./tips.html) in a browser for the styled version, or [`tips.txt`](./tips.txt) for plain text. Context-economy tips that make this scaffold's typed-artifact workflow pay off.
+4. **(Recommended) Set up the memory vault** for durable cross-session knowledge — one `npm install`, then reload Claude Code. See [Memory vault](#memory-vault-obsidian) below. Everything else (agents, commands, skills, the hook) works with no setup.
+
+5. **Get oriented:** the operating contract is [CLAUDE.md](./CLAUDE.md) (add your project's facts under its `§ Project context`). Read the Claude Code tips — [`tips.html`](./tips.html) (styled) or [`tips.txt`](./tips.txt) (plain).
 
 ## Design principles
 
@@ -36,22 +42,25 @@ Full discussion in [CLAUDE.md](./CLAUDE.md). In short:
 3. **Stories are self-contained context units.** Survive `/clear`.
 4. **Brownfield starts with the repo map.**
 5. **Reviews fan out in parallel.**
+6. **Disciplines are skills.** TDD and systematic debugging load on trigger; agents reference them instead of restating the method.
 
 ## File layout
 
 ```
-.claude/agents/      # 18 role-based subagents
-.claude/commands/    # 21 slash commands (greenfield/, brownfield/, root)
-.claude/skills/      # skills (e.g. obsidian — drives the memory vault)
+.claude/agents/      # 20 role-based subagents
+.claude/commands/    # 22 slash commands (greenfield/, brownfield/, root)
+.claude/skills/      # 3 skills: test-driven-development, systematic-debugging, obsidian
+.claude/hooks/       # SessionStart orientation hook
+.claude/INDEX.md     # one-line map of agents/commands/skills/hooks/templates
 .claude/settings.json
 .mcp.json            # project MCP servers (obsidian memory vault)
 templates/           # 15 artifact templates (+ stack-mappings.json)
 contexts/            # 4 mode prompts for --system-prompt layering
-docs/                # Generated artifacts land here (briefs/, prd/, ...)
+docs/                # Generated artifacts land here (briefs/, prd/, learnings/, ...)
 memory/              # Obsidian memory vault (durable, cross-session notes)
 vendor/mcpvault/     # vendored Obsidian MCP server (MIT, bitbonsai)
 examples/            # Worked examples (placeholder)
-CLAUDE.md            # Operating principles
+CLAUDE.md            # Operating contract (objective rules + § Project context)
 tips.html / tips.txt # Claude Code usage tips (styled / plain)
 ```
 
@@ -60,7 +69,10 @@ tips.html / tips.txt # Claude Code usage tips (styled / plain)
 - **Add an agent:** drop a markdown file in `.claude/agents/` with frontmatter (`name:`, `description:`, optional `tools:`/`model:`) and a system prompt body. See `architect.md` for a reference shape.
 - **Add a command:** drop a markdown file in `.claude/commands/`. Use `$ARGUMENTS`, `!`-prefixed bash, and `@`-prefixed file refs. Namespace via subdirs (`.claude/commands/foo/bar.md` → `/foo:bar`).
 - **Add a template:** drop a `*.tmpl.md` in `templates/` and reference it from a command or agent.
-- **Add hooks:** wire shell commands to events (PreToolUse, PostToolUse, Stop, etc.) in `.claude/settings.json`. Useful for auto-format, auto-test, blocking risky commands.
+- **Add a skill:** create `.claude/skills/<name>/SKILL.md` with frontmatter (`name:`, `description:`); put long references in a `resources/` subdir, loaded on demand. See `systematic-debugging/` for a reference shape.
+- **Add hooks:** wire shell commands to events (PreToolUse, PostToolUse, Stop, SessionStart, …) in `.claude/settings.json`. The scaffold already ships one as a working example — `.claude/hooks/session-start.sh` (SessionStart orientation). Useful for auto-format, auto-test, blocking risky commands.
+
+After adding any agent/command/skill/hook, add a one-line entry to `.claude/INDEX.md` so it stays the source of truth.
 
 **Add Pulgins:** Add custom plugins like superpowers https://github.com/obra/superpowers , https://github.com/colbymchenry/codegraph etc.
 
