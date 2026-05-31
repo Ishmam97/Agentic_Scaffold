@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agentic_swe — engineering that compounds</title>
+<meta name="description" content="A Claude Code-native scaffold that turns AI coding into a disciplined, full-lifecycle engineering team." />
+<style>
+  :root{
+    --bg:#08090e; --bg2:#0d0f17; --panel:#12141d; --panel2:#171a25;
+    --ink:#eef1f8; --muted:#98a3bb; --faint:#5b6478; --line:rgba(255,255,255,.08);
+    --indigo:#6d8bff; --violet:#a472ff; --teal:#3fd9c4; --pink:#ff79c0; --amber:#ffcf6b;
+    --grad:linear-gradient(120deg,#6d8bff 0%,#a472ff 48%,#3fd9c4 100%);
+    --grad-soft:linear-gradient(120deg,rgba(109,139,255,.16),rgba(164,114,255,.14),rgba(63,217,196,.14));
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{position:relative;padding:96px 0}
+  h1,h2,h3{line-height:1.08;letter-spacing:-.02em;margin:0}
+  h2{font-size:clamp(28px,4.4vw,46px);font-weight:800}
+  h3{font-size:19px;font-weight:700}
+  p{margin:0}
+  code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.85em;background:#05060a;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:#cdd6ec}
+  a{color:var(--indigo);text-decoration:none}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}
+  .kicker::before{content:"";width:22px;height:2px;background:var(--grad);border-radius:2px}
+  .lead{color:var(--muted);font-size:clamp(16px,1.7vw,19px);max-width:62ch}
+  .eyebrow-num{font-size:12px;font-weight:800;color:var(--faint);letter-spacing:.2em}
+
+  /* decorative orbs + grid */
+  .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none;z-index:0}
+  .gridbg{position:absolute;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:54px 54px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 0%,transparent 75%);opacity:.5}
+  .wrap{position:relative;z-index:1}
+
+  /* ---------- hero ---------- */
+  .hero{min-height:94vh;display:flex;align-items:center;padding-top:80px;overflow:hidden}
+  .hero .orb.a{width:520px;height:520px;background:#5b6bff;top:-120px;left:-80px}
+  .hero .orb.b{width:480px;height:480px;background:#7b3fff;top:40px;right:-120px;opacity:.42}
+  .hero .orb.c{width:360px;height:360px;background:#1fb8a6;bottom:-140px;left:38%;opacity:.32}
+  .logo{display:flex;align-items:center;gap:14px;margin-bottom:30px}
+  .logo .mark{width:46px;height:46px;filter:drop-shadow(0 6px 20px rgba(109,139,255,.45))}
+  .logo .name{font-weight:800;font-size:20px;letter-spacing:-.01em}
+  .logo .name .dim{color:var(--faint);font-weight:600}
+  .hero h1{font-size:clamp(46px,9vw,104px);font-weight:850;letter-spacing:-.04em;margin:6px 0 0}
+  .hero .tag{font-size:clamp(20px,3vw,30px);font-weight:750;margin-top:14px;max-width:18ch;line-height:1.18}
+  .hero .sub{margin-top:22px;font-size:clamp(16px,1.8vw,19px);color:var(--muted);max-width:60ch}
+  .hero .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 20px;border-radius:12px;font-weight:700;font-size:14.5px;border:1px solid transparent}
+  .btn.primary{background:var(--grad);color:#0a0b12;box-shadow:0 10px 30px -8px rgba(124,140,255,.6)}
+  .btn.ghost{border-color:var(--line);color:var(--ink);background:rgba(255,255,255,.02)}
+  .btn.ghost:hover{border-color:var(--indigo)}
+  .cmdpill{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:13px;color:var(--teal);background:#05060a;border:1px solid var(--line);border-radius:10px;padding:11px 14px}
+  .scrollcue{margin-top:46px;display:flex;align-items:center;gap:10px;color:var(--faint);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase}
+  .scrollcue .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(5px);opacity:1}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}.reveal.d5{transition-delay:.4s}
+
+  .sec-head{max-width:64ch}
+  .sec-head h2{margin-top:12px}
+  .sec-head .lead{margin-top:16px}
+
+  /* cards */
+  .cards{display:grid;gap:16px;margin-top:40px}
+  .c3{grid-template-columns:repeat(3,1fr)}
+  .c2{grid-template-columns:repeat(2,1fr)}
+  .c4{grid-template-columns:repeat(4,1fr)}
+  .card{background:linear-gradient(180deg,var(--panel),#0e1019);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden}
+  .card .ic{width:34px;height:34px;margin-bottom:14px}
+  .card h3{margin-bottom:7px}
+  .card p{color:var(--muted);font-size:14px}
+  .card.hl{border-color:rgba(124,140,255,.4)}
+  .card .corner{position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:var(--grad-soft);filter:blur(8px)}
+
+  /* problem section */
+  .problem{background:radial-gradient(ellipse 70% 50% at 50% 100%,rgba(255,90,120,.08),transparent 70%)}
+  .fail{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--pink);border-radius:12px;padding:16px 18px}
+  .fail .gl{flex:0 0 auto;width:26px;height:26px;color:var(--pink);margin-top:2px}
+  .fail h3{font-size:15.5px}.fail p{color:var(--muted);font-size:13.5px;margin-top:3px}
+
+  /* contrast chat vs artifacts */
+  .contrast{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:center;margin-top:44px}
+  .panelbox{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;min-height:220px}
+  .panelbox.bad{border-color:rgba(255,121,192,.25)}
+  .panelbox.good{border-color:rgba(63,217,196,.3);background:linear-gradient(180deg,var(--panel),#0c1416)}
+  .panelbox .taglbl{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .bad .taglbl{color:var(--pink)} .good .taglbl{color:var(--teal)}
+  .chatline{height:9px;border-radius:6px;background:linear-gradient(90deg,#2a2030,#1c1822);margin-top:12px}
+  .arti{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13.5px;color:var(--ink)}
+  .arti svg{flex:0 0 auto}
+  .arrowmid{color:var(--violet)}
+  @media(max-width:760px){.contrast{grid-template-columns:1fr}.arrowmid{transform:rotate(90deg);justify-self:center}}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:42px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 16px;text-align:center}
+  .stat .n{font-size:clamp(30px,4.4vw,46px);font-weight:850;letter-spacing:-.03em;line-height:1}
+  .stat .l{margin-top:8px;font-size:12px;color:var(--muted);letter-spacing:.04em}
+  @media(max-width:860px){.stats{grid-template-columns:repeat(3,1fr)}}
+
+  /* phase rail (agents) */
+  .rail{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:40px}
+  .phase{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 14px}
+  .phase .ph{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);display:flex;align-items:center;gap:7px;margin-bottom:12px}
+  .phase .ph .d{width:7px;height:7px;border-radius:50%;background:var(--grad)}
+  .phase ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+  .phase li{font-size:13px;color:var(--ink)}
+  .phase li span{color:var(--faint);font-size:11.5px;display:block}
+  @media(max-width:900px){.rail{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.rail{grid-template-columns:repeat(2,1fr)}.c3,.c4,.c2{grid-template-columns:1fr!important}}
+
+  /* flow */
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:22px}
+  .step{display:inline-flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:11px 14px;font-size:13.5px;font-weight:600}
+  .step .b{width:8px;height:8px;border-radius:50%;background:var(--grad);flex:0 0 auto}
+  .step.cmd{font-family:"SF Mono",ui-monospace,monospace;color:var(--teal);font-weight:500;font-size:12.5px}
+  .flow .ar{color:var(--faint);flex:0 0 auto}
+  .flowlabel{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:30px 0 4px}
+
+  .splitfig,.loopfig{width:100%;height:auto;margin-top:36px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--panel),#0c0e16);padding:10px}
+
+  /* advantages */
+  .adv{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+  .adv .card .ic{color:var(--teal)}
+  @media(max-width:820px){.adv{grid-template-columns:1fr}}
+
+  /* closing */
+  .closing{text-align:center;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(124,140,255,.12),transparent 70%)}
+  .closing h2{font-size:clamp(30px,5vw,56px)}
+  .closing .lead{margin:18px auto 0}
+  .startgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;margin:42px auto 0;text-align:left}
+  @media(max-width:680px){.startgrid{grid-template-columns:1fr}}
+  .startcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .startcard .t{font-weight:800;margin-bottom:6px}
+  .startcard p{color:var(--muted);font-size:13.5px;margin-bottom:12px}
+
+  footer{border-top:1px solid var(--line);padding:40px 0;color:var(--faint);font-size:13px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+  footer a{color:var(--muted)}
+
+  /* progress bar */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:50;transition:width .1s linear}
+
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .scrollcue .dot{animation:none}
+    .dash{animation:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <span class="orb a"></span><span class="orb b"></span><span class="orb c"></span>
+  <div class="gridbg"></div>
+  <div class="wrap">
+    <div class="logo reveal">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="48" y2="48">
+          <stop offset="0" stop-color="#6d8bff"/><stop offset=".5" stop-color="#a472ff"/><stop offset="1" stop-color="#3fd9c4"/>
+        </linearGradient></defs>
+        <path d="M24 2 41 12v24L24 46 7 36V12z" stroke="url(#lg)" stroke-width="2.2" fill="rgba(124,140,255,.08)"/>
+        <circle cx="24" cy="17" r="3.4" fill="url(#lg)"/><circle cx="15" cy="31" r="3.4" fill="url(#lg)"/><circle cx="33" cy="31" r="3.4" fill="url(#lg)"/>
+        <path d="M24 17 15 31M24 17l9 14M15 31h18" stroke="url(#lg)" stroke-width="1.6" opacity=".7"/>
+      </svg>
+      <div class="name">agentic<span class="dim">_swe</span></div>
+    </div>
+    <span class="kicker reveal d1">Claude Code · full-lifecycle software engineering</span>
+    <h1 class="reveal d1">Ship like a <span class="grad-text">team</span>,<br>not a chatbot.</h1>
+    <p class="tag reveal d2">A scaffold that turns Claude Code into a disciplined engineering org.</p>
+    <p class="sub reveal d3">Specialist agents, typed artifacts, parallel reviews, and a memory that compounds — so AI builds software the way a senior team would: planned, verified, and remembered.</p>
+    <div class="row reveal d4">
+      <a class="btn primary" href="#why">Why it wins
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <span class="cmdpill">/greenfield:kickoff "your idea"</span>
+      <span class="cmdpill">/brownfield:onboard</span>
+    </div>
+    <div class="scrollcue reveal d5"><span class="dot"></span> scroll to explore</div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="problem">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">01 — THE PROBLEM</span>
+      <h2>AI writes code in seconds.<br>Then the <span class="grad-text">entropy</span> sets in.</h2>
+      <p class="lead">Point a raw model at real software and it sprints — then drifts. Without structure, every productive session quietly accumulates the failure modes that make the next one worse.</p>
+    </div>
+    <div class="cards c2">
+      <div class="fail reveal d1">
+        <svg class="gl" viewBox="0 0 24 24" fill="none"><path d="M12 2 2 20h20L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v5M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div><h3>Context rot</h3><p>The window fills with logs, dead ends, and stale instructions. Quality degrades exactly when the task gets hard.</p></div>
+      </div>
+      <div class="fail reveal d1">
+        <svg class="gl" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <div><h3>Decisions trapped in chat</h3><p>The "why" lives in a transcript that vanishes on <code>/clear</code>. The next session re-litigates settled choices.</p></div>
+      </div>
+      <div class="fail reveal d2">
+        <svg class="gl" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div><h3>The re-discovery tax</h3><p>Every session re-derives how the codebase is wired — paying the same exploration cost again and again.</p></div>
+      </div>
+      <div class="fail reveal d2">
+        <svg class="gl" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg>
+        <div><h3>Reviews by vibes</h3><p>Confident, plausible, wrong. Hallucinated APIs and silent failures slip through because nothing reviews them systematically.</p></div>
+      </div>
+      <div class="fail reveal d3">
+        <svg class="gl" viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg>
+        <div><h3>Amnesia</h3><p>The bug you fixed last week, the gotcha you mapped — gone. Lessons don't survive the session that learned them.</p></div>
+      </div>
+      <div class="fail reveal d3">
+        <svg class="gl" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div><h3>One-size pipeline</h3><p>A typo fix and a migration get the same ceremony — so people skip the process entirely, right when it matters most.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE SHIFT ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">02 — THE SHIFT</span>
+      <h2>Typed artifacts beat chat.</h2>
+      <p class="lead">The core move: stop steering through conversation. Capture intent as <em>files</em> — PRDs, architecture, stories, ADRs — generated from templates. Artifacts are the handoff medium between agents, and they survive context resets.</p>
+    </div>
+    <div class="contrast">
+      <div class="panelbox bad reveal d1">
+        <div class="taglbl">Chat-driven</div>
+        <p style="color:var(--muted);font-size:13.5px;margin-top:10px">Intent scattered across turns. Re-explained every session.</p>
+        <div class="chatline" style="width:92%"></div><div class="chatline" style="width:74%"></div>
+        <div class="chatline" style="width:85%"></div><div class="chatline" style="width:60%"></div>
+        <div class="chatline" style="width:80%;opacity:.5"></div><div class="chatline" style="width:48%;opacity:.35"></div>
+        <p style="color:var(--pink);font-size:12px;margin-top:14px;font-weight:700">↯ lost on /clear</p>
+      </div>
+      <div class="arrowmid reveal d2">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none"><path d="M8 23h28M28 13l10 10-10 10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="panelbox good reveal d3">
+        <div class="taglbl">Artifact-driven</div>
+        <p style="color:var(--muted);font-size:13.5px;margin-top:10px">Intent as durable, typed files. Any agent picks up cold.</p>
+        <div class="arti"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#3fd9c4" stroke-width="1.5"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#3fd9c4" stroke-width="1.3" stroke-linecap="round"/></svg> <code>docs/prd/&lt;slug&gt;.md</code></div>
+        <div class="arti"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#a472ff" stroke-width="1.5"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#a472ff" stroke-width="1.3" stroke-linecap="round"/></svg> <code>docs/architecture/&lt;slug&gt;.md</code></div>
+        <div class="arti"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#6d8bff" stroke-width="1.5"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#6d8bff" stroke-width="1.3" stroke-linecap="round"/></svg> <code>docs/stories/001-&lt;slug&gt;.md</code></div>
+        <div class="arti"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#ffcf6b" stroke-width="1.5"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#ffcf6b" stroke-width="1.3" stroke-linecap="round"/></svg> <code>docs/adrs/0001-&lt;slug&gt;.md</code></div>
+        <p style="color:var(--teal);font-size:12px;margin-top:14px;font-weight:700">✓ git-tracked · survives resets</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">03 — WHAT'S INSIDE</span>
+      <h2>A whole team, in a folder.</h2>
+      <p class="lead">Drop it into any repo. No install, no service — just markdown, templates, and one shell hook that Claude Code reads natively.</p>
+    </div>
+    <div class="stats">
+      <div class="stat reveal d1"><div class="n grad-text" data-count="20">0</div><div class="l">specialist agents</div></div>
+      <div class="stat reveal d1"><div class="n grad-text" data-count="22">0</div><div class="l">slash commands</div></div>
+      <div class="stat reveal d2"><div class="n grad-text" data-count="15">0</div><div class="l">typed templates</div></div>
+      <div class="stat reveal d2"><div class="n grad-text" data-count="3">0</div><div class="l">skills (disciplines)</div></div>
+      <div class="stat reveal d3"><div class="n grad-text" data-count="1">0</div><div class="l">memory vault</div></div>
+      <div class="stat reveal d3"><div class="n grad-text" data-count="0">0</div><div class="l">setup steps</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE CAST ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">04 — THE CAST</span>
+      <h2>Specialists, not a generalist.</h2>
+      <p class="lead">Each agent is a role noun with sharp triggers and a single job. Claude auto-routes to the right one — or you call it by name. Context-heavy work is delegated; judgment stays in the main thread.</p>
+    </div>
+    <div class="rail">
+      <div class="phase reveal d1"><div class="ph"><span class="d"></span>Discover</div><ul>
+        <li>analyst<span>brief from a vague idea</span></li><li>pm<span>brief → PRD</span></li><li>tech-researcher<span>compare options</span></li></ul></div>
+      <div class="phase reveal d1"><div class="ph"><span class="d"></span>Design</div><ul>
+        <li>architect<span>system + ADRs</span></li><li>data-modeler<span>schemas</span></li><li>planner<span>PRD → stories</span></li></ul></div>
+      <div class="phase reveal d2"><div class="ph"><span class="d"></span>Build</div><ul>
+        <li>implementer<span>diffs from a plan</span></li><li>test-author<span>tests that bite</span></li><li>refactorer<span>behavior-preserving</span></li></ul></div>
+      <div class="phase reveal d2"><div class="ph"><span class="d"></span>Verify</div><ul>
+        <li>code-reviewer<span>correctness, clarity</span></li><li>security-auditor<span>OWASP, authz</span></li><li>perf-auditor<span>N+1, hot paths</span></li></ul></div>
+      <div class="phase reveal d3"><div class="ph"><span class="d"></span>Ship</div><ul>
+        <li>committer<span>atomic commits</span></li><li>release-manager<span>version, changelog</span></li><li>docs-writer<span>READMEs, runbooks</span></li></ul></div>
+      <div class="phase reveal d3"><div class="ph"><span class="d"></span>Operate</div><ul>
+        <li>debugger<span>root cause first</span></li><li>migration-planner<span>staged rollout</span></li><li>repo-mapper<span>REPOMAP.md</span></li></ul></div>
+    </div>
+    <p class="lead reveal d4" style="margin-top:22px">…plus <strong>devils-advocate</strong> to stress-test plans and <strong>learnings-researcher</strong> to recall what you've already learned.</p>
+  </div>
+</section>
+
+<!-- ============ ON-RAMPS ============ -->
+<section style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">05 — TWO ON-RAMPS</span>
+      <h2>Greenfield or brownfield —<br>it meets you where you are.</h2>
+      <p class="lead">A toolkit, not a rigid pipeline. Start from an idea, or drop it into a decade-old codebase. The work is <em>right-sized</em>: a typo skips straight to a fix; a new surface gets the full chain.</p>
+    </div>
+
+    <div class="flowlabel reveal d1">New project</div>
+    <div class="flow reveal d1">
+      <span class="step cmd">/brainstorm</span><span class="ar">→</span>
+      <span class="step"><span class="b"></span>brief</span><span class="ar">→</span>
+      <span class="step"><span class="b"></span>PRD</span><span class="ar">→</span>
+      <span class="step"><span class="b"></span>architecture</span><span class="ar">→</span>
+      <span class="step"><span class="b"></span>stories</span><span class="ar">→</span>
+      <span class="step cmd">/implement</span><span class="ar">→</span>
+      <span class="step cmd">/review</span><span class="ar">→</span>
+      <span class="step cmd">/ship</span>
+    </div>
+
+    <div class="flowlabel reveal d2">Existing codebase</div>
+    <div class="flow reveal d2">
+      <span class="step cmd">/brownfield:onboard</span><span class="ar">→</span>
+      <span class="step"><span class="b"></span>REPOMAP.md</span><span class="ar">→</span>
+      <span class="step cmd">/brownfield:feature</span>
+      <span class="ar">/</span>
+      <span class="step cmd">/brownfield:bugfix</span><span class="ar">→</span>
+      <span class="step cmd">/implement</span><span class="ar">→</span>
+      <span class="step cmd">/review → /ship</span>
+    </div>
+
+    <div class="cards c4" style="margin-top:44px">
+      <div class="card reveal d1"><div class="corner"></div><h3 style="color:var(--teal)">Small</h3><p>≤3 files, one change. Skip the ceremony — direct edit, inline plan.</p></div>
+      <div class="card reveal d2"><div class="corner"></div><h3 style="color:var(--indigo)">Medium</h3><p>One story file. <code>/story</code> then <code>/implement</code>.</p></div>
+      <div class="card reveal d3"><div class="corner"></div><h3 style="color:var(--violet)">Large</h3><p>PRD → architecture → stories → implement per story.</p></div>
+      <div class="card reveal d4"><div class="corner"></div><h3 style="color:var(--pink)">Complex</h3><p>Add <code>/challenge</code> to stress-test the design. Spike if novel.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARCHITECT → EDITOR ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">06 — THE SPLIT</span>
+      <h2>Plan heavy. Edit cheap.</h2>
+      <p class="lead">The architect→editor split mirrors how senior engineers actually work: a high-reasoning model designs against a story; a fast model applies the diff. Right model, right job — better results, lower cost.</p>
+    </div>
+    <svg class="splitfig reveal d1" viewBox="0 0 900 230" role="img" aria-label="Architect plans against a story; implementer applies the diff and tests.">
+      <defs>
+        <linearGradient id="g2" x1="0" y1="0" x2="900" y2="0"><stop offset="0" stop-color="#6d8bff"/><stop offset="1" stop-color="#a472ff"/></linearGradient>
+        <linearGradient id="g3" x1="0" y1="0" x2="900" y2="0"><stop offset="0" stop-color="#a472ff"/><stop offset="1" stop-color="#3fd9c4"/></linearGradient>
+        <marker id="ah" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0 0l7 3-7 3z" fill="#7c8bb5"/></marker>
+      </defs>
+      <!-- story -->
+      <rect x="30" y="78" width="150" height="74" rx="12" fill="rgba(124,140,255,.08)" stroke="#6d8bff" stroke-width="1.5"/>
+      <text x="105" y="104" text-anchor="middle" fill="#eef1f8" font-size="14" font-weight="700">story.md</text>
+      <text x="105" y="124" text-anchor="middle" fill="#98a3bb" font-size="11">AC · context · refs</text>
+      <line x1="180" y1="115" x2="250" y2="115" stroke="#7c8bb5" stroke-width="1.5" marker-end="url(#ah)"/>
+      <!-- architect -->
+      <rect x="252" y="58" width="178" height="114" rx="14" fill="rgba(164,114,255,.08)" stroke="url(#g2)" stroke-width="1.8"/>
+      <text x="341" y="92" text-anchor="middle" fill="#eef1f8" font-size="15" font-weight="800">architect</text>
+      <text x="341" y="113" text-anchor="middle" fill="#98a3bb" font-size="11">high-reasoning model</text>
+      <text x="341" y="133" text-anchor="middle" fill="#c9b6ff" font-size="11">plans · no code</text>
+      <text x="341" y="150" text-anchor="middle" fill="#98a3bb" font-size="10.5">which files, what order, tests</text>
+      <line x1="430" y1="115" x2="500" y2="115" stroke="#7c8bb5" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="465" y="106" text-anchor="middle" fill="#98a3bb" font-size="10">plan</text>
+      <!-- implementer -->
+      <rect x="502" y="58" width="178" height="114" rx="14" fill="rgba(63,217,196,.08)" stroke="url(#g3)" stroke-width="1.8"/>
+      <text x="591" y="92" text-anchor="middle" fill="#eef1f8" font-size="15" font-weight="800">implementer</text>
+      <text x="591" y="113" text-anchor="middle" fill="#98a3bb" font-size="11">fast model</text>
+      <text x="591" y="133" text-anchor="middle" fill="#9af0e2" font-size="11">applies diff · TDD</text>
+      <text x="591" y="150" text-anchor="middle" fill="#98a3bb" font-size="10.5">runs tests · flips ACs</text>
+      <line x1="680" y1="115" x2="750" y2="115" stroke="#7c8bb5" stroke-width="1.5" marker-end="url(#ah)"/>
+      <!-- diff -->
+      <rect x="752" y="78" width="120" height="74" rx="12" fill="rgba(63,217,196,.06)" stroke="#3fd9c4" stroke-width="1.5"/>
+      <text x="812" y="104" text-anchor="middle" fill="#eef1f8" font-size="14" font-weight="700">diff</text>
+      <text x="812" y="124" text-anchor="middle" fill="#3fd9c4" font-size="11">+ tests ✓</text>
+      <text x="450" y="30" text-anchor="middle" fill="#5b6478" font-size="11" letter-spacing="2">JUDGMENT STAYS IN THE MAIN THREAD · CONTEXT-HEAVY WORK IS DELEGATED</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ QUALITY GATES ============ -->
+<section style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">07 — QUALITY GATES</span>
+      <h2>Nothing ships on a vibe.</h2>
+      <p class="lead">Verification is structural, not optional. Reviews fan out in parallel; completion claims require fresh evidence; disciplines are enforced as loadable skills.</p>
+    </div>
+    <div class="cards c3">
+      <div class="card hl reveal d1"><div class="corner"></div>
+        <svg class="ic" viewBox="0 0 32 32" fill="none"><circle cx="9" cy="9" r="4" stroke="#6d8bff" stroke-width="1.8"/><circle cx="23" cy="9" r="4" stroke="#a472ff" stroke-width="1.8"/><circle cx="16" cy="23" r="4" stroke="#3fd9c4" stroke-width="1.8"/><path d="M9 13v3a3 3 0 0 0 3 3h1M23 13v3a3 3 0 0 1-3 3h-1" stroke="#7c8bb5" stroke-width="1.5"/></svg>
+        <h3>Parallel review fan-out</h3><p><code>/review</code> runs code, security, and performance auditors at once, then aggregates by severity — not by reviewer. Anti-slop guardrails kill confident-but-wrong findings.</p></div>
+      <div class="card hl reveal d2"><div class="corner"></div>
+        <svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M6 16l6 6 14-14" stroke="#3fd9c4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Verification gate</h3><p><code>/ship</code> won't claim "done" without running the command and reading the output. Stub scan, real test results, every acceptance criterion checked.</p></div>
+      <div class="card hl reveal d3"><div class="corner"></div>
+        <svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M16 3v26M16 3l-7 7M16 3l7 7" stroke="#ffcf6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="24" r="5" stroke="#ffcf6b" stroke-width="1.8"/></svg>
+        <h3>Disciplines as skills</h3><p><code>test-driven-development</code> and <code>systematic-debugging</code> load on trigger — RED→GREEN→REFACTOR, and no fix without a reproduction and a named root cause.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPOUNDING LOOP ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">08 — THE FLYWHEEL</span>
+      <h2>Engineering that <span class="grad-text">compounds</span>.</h2>
+      <p class="lead">The killer feature. Every solved problem is captured as a typed learning <em>and</em> a linked note in an Obsidian memory vault. Before the next plan, the <code>learnings-researcher</code> recalls what's relevant — so the team gets sharper with every task instead of starting from zero.</p>
+    </div>
+    <svg class="loopfig reveal d1" viewBox="0 0 900 300" role="img" aria-label="A loop: build, learn, store to vault and docs, recall, build better.">
+      <defs>
+        <linearGradient id="lp" x1="0" y1="0" x2="900" y2="300"><stop offset="0" stop-color="#6d8bff"/><stop offset=".5" stop-color="#a472ff"/><stop offset="1" stop-color="#3fd9c4"/></linearGradient>
+        <marker id="ah2" markerWidth="11" markerHeight="11" refX="6" refY="3" orient="auto"><path d="M0 0l7 3-7 3z" fill="#a472ff"/></marker>
+      </defs>
+      <ellipse class="dash" cx="450" cy="150" rx="330" ry="108" fill="none" stroke="url(#lp)" stroke-width="2" stroke-dasharray="7 9" opacity=".7" marker-end="url(#ah2)"/>
+      <!-- nodes -->
+      <g font-size="13" font-weight="700" fill="#eef1f8" text-anchor="middle">
+        <circle cx="120" cy="150" r="50" fill="#12141d" stroke="#6d8bff" stroke-width="1.8"/><text x="120" y="148">Build</text><text x="120" y="166" font-size="10.5" font-weight="500" fill="#98a3bb">/implement</text>
+        <circle cx="340" cy="62" r="50" fill="#12141d" stroke="#a472ff" stroke-width="1.8"/><text x="340" y="60">Learn</text><text x="340" y="78" font-size="10.5" font-weight="500" fill="#98a3bb">/learn</text>
+        <circle cx="560" cy="62" r="52" fill="#12141d" stroke="#3fd9c4" stroke-width="1.8"/><text x="560" y="55">Store</text><text x="560" y="72" font-size="10" font-weight="500" fill="#98a3bb">docs/learnings</text><text x="560" y="85" font-size="10" font-weight="500" fill="#98a3bb">+ vault note</text>
+        <circle cx="780" cy="150" r="50" fill="#12141d" stroke="#ffcf6b" stroke-width="1.8"/><text x="780" y="148">Recall</text><text x="780" y="166" font-size="9.5" font-weight="500" fill="#98a3bb">researcher</text>
+        <circle cx="450" cy="238" r="54" fill="#12141d" stroke="url(#lp)" stroke-width="2"/><text x="450" y="236">Build better</text><text x="450" y="254" font-size="10.5" font-weight="500" fill="#98a3bb">fewer repeats</text>
+      </g>
+      <text x="450" y="150" text-anchor="middle" fill="#5b6478" font-size="12" letter-spacing="3">THE LOOP</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ WHY IT WINS ============ -->
+<section id="why" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow-num">09 — THE ADVANTAGE</span>
+      <h2>Why teams reach for it.</h2>
+      <p class="lead">It's not more AI. It's AI with the operating discipline of a good engineering org — encoded once, applied every session.</p>
+    </div>
+    <div class="adv">
+      <div class="card reveal d1"><svg class="ic" viewBox="0 0 32 32" fill="none"><rect x="5" y="5" width="22" height="22" rx="4" stroke="currentColor" stroke-width="1.8"/><path d="M11 16h10M16 11v10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <h3>Survives /clear</h3><p>State lives in git-tracked artifacts and a memory vault — not in a fragile transcript. Reset anytime; pick up cold.</p></div>
+      <div class="card reveal d1"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M16 3v26M6 9l10-6 10 6M6 23l10 6 10-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        <h3>Compounds over time</h3><p>The learning flywheel means task N+1 is informed by task N. Your AI team accrues institutional memory.</p></div>
+      <div class="card reveal d2"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M4 16h7l3-8 4 16 3-8h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Right-sized, always</h3><p>Complexity sets the depth, not a fixed process. Trivial work stays fast; risky work gets gated.</p></div>
+      <div class="card reveal d2"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M16 4l11 4v6c0 7-5 12-11 14C10 26 5 21 5 14V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 15l3 3 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Anti-hallucination, anti-slop</h3><p>A strict knowledge-verification chain and reviewer guardrails catch invented APIs and silent failures before they merge.</p></div>
+      <div class="card reveal d3"><svg class="ic" viewBox="0 0 32 32" fill="none"><circle cx="10" cy="10" r="5" stroke="currentColor" stroke-width="1.8"/><circle cx="22" cy="22" r="5" stroke="currentColor" stroke-width="1.8"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.8"/></svg>
+        <h3>Cost-aware by design</h3><p>Heavy model to plan, fast model to edit, parallel agents for breadth. Spend reasoning where it pays off.</p></div>
+      <div class="card reveal d3"><svg class="ic" viewBox="0 0 32 32" fill="none"><path d="M6 6h20v20H6z" stroke="currentColor" stroke-width="1.8"/><path d="M6 12h20M12 12v14" stroke="currentColor" stroke-width="1.5"/></svg>
+        <h3>Drop-in &amp; portable</h3><p>Pure markdown + one shell hook. Add it to any repo in minutes; nothing to host, nothing to learn but a few slash commands.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<section class="closing">
+  <div class="wrap">
+    <span class="kicker reveal" style="justify-content:center">Get started in two commands</span>
+    <h2 class="reveal d1" style="margin-top:14px">A toolkit, not a pipeline.</h2>
+    <p class="lead reveal d2">Invoke what the work needs. The pieces compose — there's no order to memorize, only a team to direct.</p>
+    <div class="startgrid">
+      <div class="startcard reveal d2">
+        <div class="t" style="color:var(--indigo)">Starting fresh</div>
+        <p>Clone it, open Claude Code, and describe the idea.</p>
+        <span class="cmdpill">/greenfield:kickoff "your idea"</span>
+      </div>
+      <div class="startcard reveal d3">
+        <div class="t" style="color:var(--teal)">Existing codebase</div>
+        <p>Drop the folders in, then let it map the repo.</p>
+        <span class="cmdpill">/brownfield:onboard</span>
+      </div>
+    </div>
+    <div class="row reveal d4" style="justify-content:center;margin-top:38px">
+      <a class="btn primary" href="https://github.com/Ishmam97/Agentic_Scaffold">View the repo
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="btn ghost" href="./CLAUDE.md">Read the operating contract</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <strong style="color:var(--ink)">agentic_swe</strong> — a Claude Code-native scaffold for full-lifecycle software engineering.
+    </div>
+    <div>
+      Patterns studied from superpowers · compound-engineering · claude-code-workflows · agent-skills · ai-dev-tasks · vibecoding · ECC
+    </div>
+  </div>
+</footer>
+
+<script>
+  // scroll progress bar
+  const prog = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  };
+  document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, {threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // animated counters
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const animateCount = (el) => {
+    const target = +el.dataset.count;
+    if (reduce || target === 0){ el.textContent = target; return; }
+    const dur = 1100, t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min(1, (t - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const co = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ animateCount(e.target); co.unobserve(e.target);} });
+  }, {threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(el => co.observe(el));
+</script>
+</body>
+</html>

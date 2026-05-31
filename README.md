@@ -33,6 +33,42 @@ A Claude Code-native scaffold for full-lifecycle software engineering. Brings op
 
 5. **Get oriented:** the operating contract is [CLAUDE.md](./CLAUDE.md) (add your project's facts under its `§ Project context`). Read the Claude Code tips — [`tips.html`](./tips.html) (styled) or [`tips.txt`](./tips.txt) (plain).
 
+## Adding to an existing project (brownfield)
+
+Don't clone the scaffold *as* your project — drop its pieces **into** your existing repo, then let it map your codebase. Everything you copy is additive; none of it contains your source.
+
+1. **Copy the scaffold in.** Clone this repo alongside yours (`../agentic_swe`), then from your project root:
+   ```bash
+   rsync -a --ignore-existing ../agentic_swe/.claude/    .claude/     # agents, commands, skills, hooks, INDEX
+   rsync -a --ignore-existing ../agentic_swe/templates/  templates/
+   rsync -a --ignore-existing ../agentic_swe/contexts/   contexts/
+   # optional — durable memory vault:
+   cp    -n  ../agentic_swe/.mcp.json  .
+   rsync -a --ignore-existing ../agentic_swe/vendor/  vendor/
+   rsync -a --ignore-existing ../agentic_swe/memory/  memory/
+   ```
+   `--ignore-existing` / `cp -n` are **no-clobber** — they never overwrite files you already have. (No `rsync`? Copy the folders by hand; just don't replace your own files.)
+
+2. **Merge `CLAUDE.md`, don't overwrite it.** Already have one? Keep your project facts and paste in the scaffold's *Operating principles*, *Conventions*, *Knowledge verification chain*, *Delegation matrix*, and *Rules* — or adopt the scaffold's `CLAUDE.md` and move your existing notes under its `§ Project context`. No `CLAUDE.md` yet? Use the scaffold's as-is.
+
+3. **Merge `.gitignore`.** Add the scaffold's entries (`.claude/settings.local.json`, `throwaway/`, `vendor/**/node_modules/`, the `memory/**/.obsidian/` cruft).
+
+4. **Reload Claude Code, then map the repo:**
+   ```
+   /brownfield:onboard
+   ```
+   This builds `REPOMAP.md` — the living index every agent leans on — and hands back a first-impressions summary. Run it once; refresh it when the codebase shifts.
+
+5. **Fill `CLAUDE.md` § Project context** — stack, build/test/lint commands, key domains, hard constraints. (`/brownfield:onboard` proposes most of this for you.)
+
+6. **Work the repo:**
+   - New capability → `/brownfield:feature "..."` → PRD → architecture delta → stories → `/implement <story>`.
+   - Bug → `/brownfield:bugfix "..."` → debugger (via the `systematic-debugging` skill) → minimum fix → regression test.
+   - Cleanup → `/brownfield:refactor "<area>"` (behavior-preserving).
+   - Close with `/review` (parallel code+security+perf) then `/ship` (verification-gated pre-PR check).
+
+> **Already using Claude Code in this repo?** The scaffold is purely additive — your existing settings, MCP servers, and `CLAUDE.md` stay; you're adding agents, commands, skills, templates, and one SessionStart hook beside them. Skip the `.mcp.json` / `vendor` / `memory` lines if you don't want the vault.
+
 ## Design principles
 
 Full discussion in [CLAUDE.md](./CLAUDE.md). In short:
@@ -74,7 +110,7 @@ tips.html / tips.txt # Claude Code usage tips (styled / plain)
 
 After adding any agent/command/skill/hook, add a one-line entry to `.claude/INDEX.md` so it stays the source of truth.
 
-**Add Pulgins:** Add custom plugins like superpowers https://github.com/obra/superpowers , https://github.com/colbymchenry/codegraph etc.
+**Add plugins:** Add custom plugins like [superpowers](https://github.com/obra/superpowers), [codegraph](https://github.com/colbymchenry/codegraph), etc.
 
 ## Memory vault (Obsidian)
 
@@ -120,6 +156,20 @@ Patterns borrowed from:
 - [SuperClaude](https://github.com/SuperClaude-Org/SuperClaude_Framework) — Claude Code-native layering, persona auto-activation, flag systems.
 - [OpenHands](https://github.com/All-Hands-AI/OpenHands) — microagent trigger pattern (condition-activated context injection).
 - [Aider](https://github.com/Aider-AI/aider) — repo map as grounding artifact, architect/editor split.
+
+**Reference repositories studied** — analyzed in depth (see the round reports in `throwaway/`) to harden the agents, commands, skills, and hooks:
+
+- [obra/superpowers](https://github.com/obra/superpowers) — the SessionStart-hook pattern, `verification-before-completion` gate, TDD & systematic-debugging disciplines, rationalization tables.
+- [EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) — the compounding learning loop (typed learnings → researcher → recall), script-first architecture.
+- [shinpr/claude-code-workflows](https://github.com/shinpr/claude-code-workflows) — evidence-gated workflows, stub detection, `runnableCheck` strictness, document scope walls, ADR triggers.
+- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) — Doubt-Driven Development, anti-rationalization tables, "NOTICED BUT NOT TOUCHING" scope discipline, working hooks.
+- [tech-leads-club/agent-skills](https://github.com/tech-leads-club/agent-skills) — right-sizing tiers, the knowledge-verification chain, the sub-agent delegation matrix, the description standard.
+- [snarktank/ai-dev-tasks](https://github.com/snarktank/ai-dev-tasks) — lettered-options clarifying questions, two-phase plan-then-expand.
+- [cpjet64/vibecoding](https://github.com/cpjet64/vibecoding) — the AI-code-failure taxonomy, incident/runbook templates, MoSCoW prioritization.
+- [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) — the surgical-change discipline (Karpathy's principles).
+- [affaan-m/ECC](https://github.com/affaan-m/ECC) — reviewer anti-slop guardrails, `/aside` & `/checkpoint`, the `contexts/` mode-file pattern.
+
+Memory vault powered by [bitbonsai/mcpvault](https://github.com/bitbonsai/mcpvault) (MIT), vendored at `vendor/mcpvault/`.
 
 ## License
 
