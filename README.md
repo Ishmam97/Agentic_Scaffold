@@ -1,4 +1,4 @@
-# agentic_swe
+# Forge ~ agentic swe scaffold
 
 A Claude Code-native scaffold for full-lifecycle software engineering. Brings opinionated multi-agent workflows — borrowing the best ideas from BMAD-METHOD, MetaGPT, ChatDev, SuperClaude, OpenHands, and Aider — into a flat, composable toolkit you can drop into any project.
 
