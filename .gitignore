@@ -13,6 +13,9 @@ Thumbs.db
 # Local scratch — cloned repos for analysis, drafts, etc.
 throwaway/
 
+# Landing page / portfolio handoff — kept local, not tracked
+landing/
+
 # Local planning scratch — kept on disk, not tracked
 ROADMAP.md
 
