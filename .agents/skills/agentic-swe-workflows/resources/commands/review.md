@@ -10,7 +10,7 @@ In **parallel** (single message, multiple Agent tool calls), invoke these subage
 - `perf-auditor` — N+1, hot-path issues, missing indexes.
 - `learnings-researcher` — prior lessons/gotchas on the changed files (read-only; surfaces what we've already learned in this area).
 
-When all three return, **aggregate findings into one report grouped by severity**, not by reviewer:
+When all return, **aggregate findings into one report grouped by severity**, not by reviewer:
 
 - **[BLOCKER]** / **[CRITICAL]** — must fix before merge.
 - **[SHOULD]** / **[HIGH]** — fix or justify.

@@ -4,8 +4,8 @@
       "type": "stdio",
       "command": "node",
       "args": [
-        "vendor/mcpvault/dist/server.js",
-        "memory"
+        "${CLAUDE_PROJECT_DIR:-.}/vendor/mcpvault/dist/server.js",
+        "${CLAUDE_PROJECT_DIR:-.}/memory"
       ],
       "env": {}
     }
