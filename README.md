@@ -1,16 +1,16 @@
 # Forge ~ agentic swe scaffold
 
-A Claude Code-native scaffold for full-lifecycle software engineering. Brings opinionated multi-agent workflows — borrowing the best ideas from BMAD-METHOD, MetaGPT, ChatDev, SuperClaude, OpenHands, and Aider — into a flat, composable toolkit you can drop into any project.
+A Claude Code and Codex scaffold for full-lifecycle software engineering. Brings opinionated multi-agent workflows — borrowing the best ideas from BMAD-METHOD, MetaGPT, ChatDev, SuperClaude, OpenHands, and Aider — into a flat, composable toolkit you can drop into any project.
 
 ## What you get
 
-- **20 specialist subagents** (`.claude/agents/`) — analyst, pm, architect, tech-researcher, planner, implementer, test-author, code-reviewer, security-auditor, perf-auditor, debugger, refactorer, docs-writer, repo-mapper, migration-planner, release-manager, committer, data-modeler, devils-advocate, learnings-researcher.
-- **22 slash commands** (`.claude/commands/`) for ideation (`/brainstorm`), greenfield (`/greenfield:kickoff`, `/greenfield:prd`, …), brownfield (`/brownfield:onboard`, `/brownfield:feature`, …), everyday operations (`/implement`, `/review`, `/ship`, `/adr`, `/migrate`, `/release`, `/postmortem`, `/story`), and session utilities (`/aside`, `/checkpoint`, `/learn`, `/challenge`).
-- **3 skills** (`.claude/skills/`) — `test-driven-development` and `systematic-debugging` are disciplines that load on trigger and back the implementer/test-author/debugger; `obsidian` drives the memory vault.
-- **A `SessionStart` hook** (`.claude/hooks/`) — injects a scaffold orientation into every session, so commands and skills are discoverable from turn one. No setup required.
+- **20 specialist subagents** for Claude Code (`.claude/agents/`) and Codex (`.codex/agents/`) — analyst, pm, architect, tech-researcher, planner, implementer, test-author, code-reviewer, security-auditor, perf-auditor, debugger, refactorer, docs-writer, repo-mapper, migration-planner, release-manager, committer, data-modeler, devils-advocate, learnings-researcher.
+- **22 workflows** — Claude Code slash commands in `.claude/commands/`; Codex routes the same workflows through the `agentic-swe-workflows` skill in `.agents/skills/`.
+- **3 discipline/integration skills** mirrored for both tools — `test-driven-development`, `systematic-debugging`, and `obsidian`.
+- **A `SessionStart` hook** for both tools — `.claude/hooks/` for Claude Code and `.codex/hooks/` for Codex.
 - **15 typed artifact templates** (`templates/`) — PRDs, architecture docs, stories, ADRs, migrations, changelogs, postmortems, data models, briefs, repo maps, PR bodies, plus incident reports, runbooks, learnings (typed two-track), and a stack-mappings reference.
 - **4 mode contexts** (`contexts/`) — `dev`, `review`, `research`, `debug`. Layer on top of `CLAUDE.md` via `claude --system-prompt "$(cat contexts/<mode>.md)"` when the same project needs a different stance.
-- **A scaffold index** (`.claude/INDEX.md`) — the one-line map of every agent, command, skill, hook, and template; the place to look when picking a tool.
+- **Scaffold indexes** — `.claude/INDEX.md` and `.codex/INDEX.md`, the one-line maps of agents, workflows, skills, hooks, and templates.
 - **A `REPOMAP.md` workflow** for brownfield grounding — agents reference it instead of re-deriving structure each session.
 
 ## Quick start
@@ -22,16 +22,18 @@ A Claude Code-native scaffold for full-lifecycle software engineering. Brings op
    rm -rf .git && git init
    ```
 
-2. **Open in Claude Code.** The `SessionStart` hook injects a scaffold orientation automatically. Type `/` to confirm the `greenfield:` and `brownfield:` command groups appear. The full tool map is **[`.claude/INDEX.md`](./.claude/INDEX.md)** — start there to pick a tool.
+2. **Open in your agent.**
+   - **Claude Code:** the `SessionStart` hook injects a scaffold orientation automatically. Type `/` to confirm the `greenfield:` and `brownfield:` command groups appear. Start with **[`.claude/INDEX.md`](./.claude/INDEX.md)**.
+   - **Codex:** trust the project so `.codex/` config loads. Codex reads **[AGENTS.md](./AGENTS.md)**, discovers skills under `.agents/skills/`, and uses **[`.codex/INDEX.md`](./.codex/INDEX.md)** as the tool map. Ask for workflows as `agentic_swe implement <story>`, `agentic_swe brownfield:onboard`, etc.
 
 3. **Pick your starting point:**
    - **Rough idea, scope still fuzzy:** `/brainstorm "real-time pair-coding app"` — explores it one question at a time, then hands off to a brief/PRD.
    - **New project:** `/greenfield:kickoff "build a real-time pair-coding app"`
    - **Existing repo:** `/brownfield:onboard`
 
-4. **(Recommended) Set up the memory vault** for durable cross-session knowledge — one `npm install`, then reload Claude Code. See [Memory vault](#memory-vault-obsidian) below. Everything else (agents, commands, skills, the hook) works with no setup.
+4. **(Recommended) Set up the memory vault** for durable cross-session knowledge — one `npm install`, then reload Claude Code or Codex. See [Memory vault](#memory-vault-obsidian) below. Everything else works with no setup.
 
-5. **Get oriented:** the operating contract is [CLAUDE.md](./CLAUDE.md) (add your project's facts under its `§ Project context`). Read the Claude Code tips — [`tips.html`](./tips.html) (styled) or [`tips.txt`](./tips.txt) (plain).
+5. **Get oriented:** Claude Code uses [CLAUDE.md](./CLAUDE.md); Codex uses [AGENTS.md](./AGENTS.md). Add your project's facts under the relevant `Project context` section.
 
 ## Adding to an existing project (brownfield)
 
@@ -40,8 +42,11 @@ Don't clone the scaffold *as* your project — drop its pieces **into** your exi
 1. **Copy the scaffold in.** Clone this repo alongside yours (`../agentic_swe`), then from your project root:
    ```bash
    rsync -a --ignore-existing ../agentic_swe/.claude/    .claude/     # agents, commands, skills, hooks, INDEX
+   rsync -a --ignore-existing ../agentic_swe/.codex/     .codex/      # Codex config, agents, hooks, INDEX
+   rsync -a --ignore-existing ../agentic_swe/.agents/    .agents/     # Codex skills + workflow bridge
    rsync -a --ignore-existing ../agentic_swe/templates/  templates/
    rsync -a --ignore-existing ../agentic_swe/contexts/   contexts/
+   cp    -n  ../agentic_swe/AGENTS.md  .
    # optional — durable memory vault:
    cp    -n  ../agentic_swe/.mcp.json  .
    rsync -a --ignore-existing ../agentic_swe/vendor/  vendor/
@@ -49,17 +54,18 @@ Don't clone the scaffold *as* your project — drop its pieces **into** your exi
    ```
    `--ignore-existing` / `cp -n` are **no-clobber** — they never overwrite files you already have. (No `rsync`? Copy the folders by hand; just don't replace your own files.)
 
-2. **Merge `CLAUDE.md`, don't overwrite it.** Already have one? Keep your project facts and paste in the scaffold's *Operating principles*, *Conventions*, *Knowledge verification chain*, *Delegation matrix*, and *Rules* — or adopt the scaffold's `CLAUDE.md` and move your existing notes under its `§ Project context`. No `CLAUDE.md` yet? Use the scaffold's as-is.
+2. **Merge instruction files, don't overwrite them.** Claude Code uses `CLAUDE.md`; Codex uses `AGENTS.md`. Already have one? Keep your project facts and paste in the scaffold's operating principles, conventions, knowledge verification chain, delegation matrix, and rules. No instruction file yet? Use the scaffold's as-is.
 
 3. **Merge `.gitignore`.** Add the scaffold's entries (`.claude/settings.local.json`, `throwaway/`, `vendor/**/node_modules/`, the `memory/**/.obsidian/` cruft).
 
-4. **Reload Claude Code, then map the repo:**
+4. **Reload your agent, then map the repo:**
    ```
    /brownfield:onboard
    ```
+   In Codex, ask for `agentic_swe brownfield:onboard`.
    This builds `REPOMAP.md` — the living index every agent leans on — and hands back a first-impressions summary. Run it once; refresh it when the codebase shifts.
 
-5. **Fill `CLAUDE.md` § Project context** — stack, build/test/lint commands, key domains, hard constraints. (`/brownfield:onboard` proposes most of this for you.)
+5. **Fill the project context** in `CLAUDE.md` and/or `AGENTS.md` — stack, build/test/lint commands, key domains, hard constraints. `brownfield:onboard` proposes most of this for you.
 
 6. **Work the repo:**
    - New capability → `/brownfield:feature "..."` → PRD → architecture delta → stories → `/implement <story>`.
@@ -67,7 +73,7 @@ Don't clone the scaffold *as* your project — drop its pieces **into** your exi
    - Cleanup → `/brownfield:refactor "<area>"` (behavior-preserving).
    - Close with `/review` (parallel code+security+perf) then `/ship` (verification-gated pre-PR check).
 
-> **Already using Claude Code in this repo?** The scaffold is purely additive — your existing settings, MCP servers, and `CLAUDE.md` stay; you're adding agents, commands, skills, templates, and one SessionStart hook beside them. Skip the `.mcp.json` / `vendor` / `memory` lines if you don't want the vault.
+> **Already using Claude Code or Codex in this repo?** The scaffold is additive. Existing settings, MCP servers, `CLAUDE.md`, and `AGENTS.md` stay; merge the scaffold pieces beside them. Skip the `.mcp.json` / `vendor` / `memory` lines if you don't want the vault.
 
 ## Design principles
 
@@ -89,6 +95,11 @@ Full discussion in [CLAUDE.md](./CLAUDE.md). In short:
 .claude/hooks/       # SessionStart orientation hook
 .claude/INDEX.md     # one-line map of agents/commands/skills/hooks/templates
 .claude/settings.json
+.codex/agents/       # Codex custom agents generated from .claude/agents
+.codex/hooks/        # Codex SessionStart hook
+.codex/INDEX.md      # Codex-native map
+.codex/config.toml   # Codex project config + obsidian MCP server
+.agents/skills/      # Codex skills, including workflow bridge resources
 .mcp.json            # project MCP servers (obsidian memory vault)
 templates/           # 15 artifact templates (+ stack-mappings.json)
 contexts/            # 4 mode prompts for --system-prompt layering
@@ -97,6 +108,7 @@ memory/              # Obsidian memory vault (durable, cross-session notes)
 vendor/mcpvault/     # vendored Obsidian MCP server (MIT, bitbonsai)
 examples/            # Worked examples (placeholder)
 CLAUDE.md            # Operating contract (objective rules + § Project context)
+AGENTS.md            # Codex operating contract
 tips.html / tips.txt # Claude Code usage tips (styled / plain)
 ```
 
@@ -106,9 +118,15 @@ tips.html / tips.txt # Claude Code usage tips (styled / plain)
 - **Add a command:** drop a markdown file in `.claude/commands/`. Use `$ARGUMENTS`, `!`-prefixed bash, and `@`-prefixed file refs. Namespace via subdirs (`.claude/commands/foo/bar.md` → `/foo:bar`).
 - **Add a template:** drop a `*.tmpl.md` in `templates/` and reference it from a command or agent.
 - **Add a skill:** create `.claude/skills/<name>/SKILL.md` with frontmatter (`name:`, `description:`); put long references in a `resources/` subdir, loaded on demand. See `systematic-debugging/` for a reference shape.
-- **Add hooks:** wire shell commands to events (PreToolUse, PostToolUse, Stop, SessionStart, …) in `.claude/settings.json`. The scaffold already ships one as a working example — `.claude/hooks/session-start.sh` (SessionStart orientation). Useful for auto-format, auto-test, blocking risky commands.
+- **Add hooks:** Claude Code hooks are wired in `.claude/settings.json`; Codex hooks are wired in `.codex/hooks.json`. The scaffold ships SessionStart examples for both.
 
-After adding any agent/command/skill/hook, add a one-line entry to `.claude/INDEX.md` so it stays the source of truth.
+After adding any agent/command/skill/hook, add a one-line entry to `.claude/INDEX.md` and `.codex/INDEX.md`.
+
+**Sync Codex mirrors:** `.codex/agents/` and the Codex workflow skill are generated from the Claude scaffold sources. After editing `.claude/agents/`, `.claude/commands/`, or `.claude/skills/`, run:
+
+```bash
+node scripts/sync-codex-support.mjs
+```
 
 **Add plugins:** Add custom plugins like [superpowers](https://github.com/obra/superpowers), [codegraph](https://github.com/colbymchenry/codegraph), etc.
 
@@ -120,8 +138,8 @@ The scaffold ships with an Obsidian-backed **memory vault** for durable, cross-s
 
 - **Vault:** `memory/` — a normal Obsidian vault (`.md` files + `.obsidian/` config). Open it in Obsidian directly.
 - **MCP server:** [`@bitbonsai/mcpvault`](https://github.com/bitbonsai/mcpvault) (MIT), vendored at `vendor/mcpvault/`. Exposes 15 tools (`read_note`, `write_note`, `patch_note`, `search_notes`, `manage_tags`, …) with frontmatter-safe writes.
-- **Config:** committed `.mcp.json` launches the server via `node vendor/mcpvault/dist/server.js` against the vault. Paths use `${CLAUDE_PROJECT_DIR:-.}` so the config is portable.
-- **Skill:** `.claude/skills/obsidian/` routes vault operations across MCP, the Obsidian CLI, and git sync.
+- **Config:** Claude Code uses committed `.mcp.json`; Codex uses `.codex/config.toml`. Both launch `node vendor/mcpvault/dist/server.js` against the vault.
+- **Skill:** `.claude/skills/obsidian/` and `.agents/skills/obsidian/` route vault operations across MCP, the Obsidian CLI, and git sync.
 
 **One-time setup after cloning:**
 
@@ -140,9 +158,9 @@ The scaffold ships with an Obsidian-backed **memory vault** for durable, cross-s
 
 3. **Open the vault in Obsidian:** launch Obsidian → *Open folder as vault* → pick this repo's `memory/` directory. The `.obsidian/` config is already committed, so workspace and plugin settings come along.
 
-4. **Reload Claude Code** so it picks up `.mcp.json`. Verify with `/mcp` — you should see the `obsidian` server connected.
+4. **Reload Claude Code or Codex** so it picks up the MCP config. Verify with `/mcp` — you should see the `obsidian` server connected.
 
-**Pointing at your own vault:** edit the vault path in `.mcp.json` (the second `args` entry). The default points at `memory/` itself; change it if you keep your vault elsewhere.
+**Pointing at your own vault:** edit the vault path in `.mcp.json` for Claude Code and `.codex/config.toml` for Codex. The default points at `memory/` itself; change it if you keep your vault elsewhere.
 
 > The contents of `memory/` are left untracked by default — your notes are yours. If you want them in git, the `obsidian` skill has a git-sync mode (commit/pull/push, no force) that can manage the vault as its own synced store.
 
