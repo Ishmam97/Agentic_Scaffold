@@ -1,0 +1,19 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# Project-scoped Codex config for the agentic_swe scaffold.
+# Codex loads project .codex/ layers only after the repository is trusted.
+
+[features]
+multi_agent = true
+hooks = true
+
+[agents]
+max_threads = 6
+max_depth = 1
+
+[mcp_servers.obsidian]
+command = "node"
+args = ["vendor/mcpvault/dist/server.js", "memory"]
+startup_timeout_sec = 20
+tool_timeout_sec = 60
+

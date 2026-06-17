@@ -10,6 +10,10 @@ Thumbs.db
 # Claude Code per-user overrides
 .claude/settings.local.json
 
+# Codex local/debug state
+.codex-log/
+.agents/checkpoints.log
+
 # Local scratch — cloned repos for analysis, drafts, etc.
 throwaway/
 
