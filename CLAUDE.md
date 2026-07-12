@@ -36,7 +36,7 @@ _Unconfigured scaffold — no project bound yet. Run `/greenfield:kickoff` or `/
    **Safety valve:** if a "small" task reveals more than 5 atomic steps during implementation, STOP and create a formal story file.
    **ADR trigger (any tier):** record an ADR (`/adr`) when a change introduces/replaces an external dependency, alters a contract used in 3+ places, changes data flow or persistence, adds an architectural layer, or commits to one of several viable designs. See `/adr` for the full matrix.
 
-7. **Disciplines are skills.** Cross-cutting methods live in `.claude/skills/` and load on trigger: `test-driven-development` (the RED→GREEN→REFACTOR discipline behind `implementer`/`test-author`), `systematic-debugging` (the method behind `debugger`/`/brownfield:bugfix`), `obsidian` (the memory vault). Agents reference the skill rather than restating it.
+7. **Disciplines are skills.** Cross-cutting methods live in `.claude/skills/` and load on trigger: `test-driven-development` (the RED→GREEN→REFACTOR discipline behind `implementer`/`test-author`), `systematic-debugging` (the method behind `debugger`/`/brownfield:bugfix`), `obsidian` (the memory vault), `skill-authoring` (the checklist behind adding/editing any agent, command, or skill). Agents reference the skill rather than restating it.
 
 ## Conventions
 
@@ -44,10 +44,15 @@ _Unconfigured scaffold — no project bound yet. Run `/greenfield:kickoff` or `/
 - Stories: `docs/stories/<NNN>-<slug>.md` (zero-padded, sequential). ADRs: `docs/adrs/<NNNN>-<slug>.md`. Postmortems: `docs/postmortems/<YYYY-MM-DD>-<slug>.md`. Learnings: `docs/learnings/<YYYY-MM-DD>-<slug>.md`.
 - Agents are role nouns (`architect.md`); commands are verbs or namespaced (`/implement`, `/greenfield:prd`); skills are disciplines (`test-driven-development/`).
 - **Frontmatter `description:` must follow** `[What it does] + [Use when "<trigger phrase>"] + [Do NOT use for X]`. Negative triggers prevent overlap; without them, auto-selection blurs.
+- **Model-invoked vs. user-invoked.** A skill (`.claude/skills/`) is model-invoked — reached by trigger-match, never called by name. A command or agent is user-invoked — reached only by explicit reference (a typed `/command`, or an agent naming another agent to spawn). A user-invoked surface never triggers another user-invoked surface by pattern-matching; it can only name it explicitly. See the `skill-authoring` skill before adding or editing any of the three.
+- **Deferred-corner marker.** When you deliberately cut a corner mid-implementation (not a stub — a real but intentionally-limited solution), leave `# scope: <what was deferred>, <trigger to revisit>` at the site. `/review` and `/ship` grep for these and surface any left unresolved before a PR — cheaper than an ADR for something that isn't yet a durable decision.
+- **Rejected-request ledger.** `docs/out-of-scope/<slug>.md` holds asks that were deliberately descoped or rejected (one file per ask, one-line reason + date). `analyst` and `pm` check it before drafting a new brief/PRD so the same ask isn't re-litigated from scratch.
 
 ## Memory vault
 
 An Obsidian vault at `memory/` is durable cross-session memory, reached via the `obsidian` MCP server (`.mcp.json`) and the `.claude/skills/obsidian/` skill. `docs/` is the per-task handoff medium; the vault is long-term memory (linked notes, decisions-in-context, codebase gotchas). Prefer the MCP tools for vault reads/writes (frontmatter-safe, sandboxed). `/learn` writes to both: a typed artifact in `docs/learnings/` and a linked vault note. Before planning or debugging, the `learnings-researcher` agent searches both for prior lessons.
+
+The vault is used proactively, not just when the user mentions it: `SessionStart` prompts a vault check before assuming a cold start, `PreCompact` prompts a save of anything durable before context is discarded, and `TaskCompleted` prompts a save when a completed task produced something durable. See `.claude/hooks/` / `.claude/INDEX.md` § Hooks.
 
 ## What not to do
 
