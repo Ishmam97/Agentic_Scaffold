@@ -8,15 +8,23 @@ set -euo pipefail
 ROOT="${CLAUDE_PROJECT_DIR:-.}"
 INDEX="${ROOT}/.claude/INDEX.md"
 
-# Pull the quick-routing table from the index: from its heading to the next H2.
+# Pull the quick-routing table and the skills table from the index: from each
+# heading to the next H2. Keeps the full skill index in context every session
+# instead of relying on the model to open .claude/INDEX.md itself.
 routing=""
+skills=""
 if [ -f "$INDEX" ]; then
   routing="$(awk '/^## When to invoke what/{f=1;print;next} f&&/^## /{exit} f{print}' "$INDEX" 2>/dev/null || true)"
+  skills="$(awk '/^## Skills —/{f=1;print;next} f&&/^## /{exit} f{print}' "$INDEX" 2>/dev/null || true)"
 fi
 
-message="agentic_swe scaffold active. Operating contract: CLAUDE.md (read its § Project context for project facts). Full tool map: .claude/INDEX.md. Disciplines available as skills: test-driven-development, systematic-debugging, obsidian (memory vault at memory/).
+message="agentic_swe scaffold active. Operating contract: CLAUDE.md (read its § Project context for project facts). Full tool map: .claude/INDEX.md. Memory vault at memory/, driven by the obsidian skill.
 
-${routing}"
+Before assuming this is a cold start, check the vault for context relevant to what the user is about to ask — run mcp__obsidian__search_notes (or read Home.md / the relevant MOC) for prior decisions, features, or gotchas touching this area. Don't wait for the user to mention the vault explicitly.
+
+${routing}
+
+${skills}"
 
 # Escape a string for embedding in JSON without requiring jq.
 # Each ${s//old/new} is one C-level pass — fast and dependency-free.
