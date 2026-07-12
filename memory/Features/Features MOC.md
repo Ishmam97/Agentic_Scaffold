@@ -12,4 +12,8 @@ One running note per feature. Each links to its `docs/prd/`, `docs/architecture/
 
 PM creates the stub; analyst, architect, and planner enrich it. Tag `#feature`.
 
+## Features
+
+- [[Cross-Agent Collaboration MCP]] — neutral coordination substrate for heterogeneous coding agents; brief done ([`docs/briefs/cross-agent-collaboration-mcp.md`](../../docs/briefs/cross-agent-collaboration-mcp.md)), PRD blocked on activation spike
+
 [[Home]]

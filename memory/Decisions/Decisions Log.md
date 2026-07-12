@@ -12,4 +12,9 @@ Decision-in-context notes — the narrative *why* behind choices. When a formal 
 
 The architect appends decisions here. Tag `#decision`.
 
+## Logged
+
+- [[Cross-Agent MCP - Multi-Agent Review Consensus]] — review pivots for the cross-agent collaboration MCP (2026-06-26)
+- [[Cross-Agent MCP - Agent-Agnostic by Design]] — any agent fills any role; the user binds agents to roles (2026-06-26)
+
 [[Home]]
