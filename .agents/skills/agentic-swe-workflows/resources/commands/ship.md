@@ -8,6 +8,8 @@ Final pre-PR gate. **This command coordinates — it does not edit files itself.
 
 Scan the diff (`git diff <base>...HEAD`) for incomplete-implementation markers: `TODO` / `FIXME`, "not implemented" / `unimplemented!()` / `NotImplementedError`, empty function/method bodies, and hardcoded placeholder returns (`return null`/`return []`/`return {}` where real logic belongs). Distinguish a story-justified minimal implementation from a stub. If you find a stub, **STOP** — the work isn't shippable. Report each with file:line.
 
+Also grep the diff for `# scope:` deferred-corner markers (AGENTS.md § Conventions). List each with file:line — these aren't stubs, but any left unresolved need the author's explicit sign-off (or a follow-up story/ADR) before shipping, not silent passage.
+
 ## The verification gate — applies to every claim below
 
 ```
