@@ -29,7 +29,7 @@ _Unconfigured scaffold - no project bound yet. Run the `greenfield:kickoff` or `
 4. **Brownfield starts with the repo map.** Run `brownfield:onboard` once per repo to seed `REPOMAP.md`.
 5. **Reviews fan out in parallel.** The `review` workflow asks `code-reviewer`, `security-auditor`, `perf-auditor`, and `learnings-researcher` to inspect the diff, then aggregates by severity.
 6. **Right-size the work.** Small changes can be direct edits; medium work gets a story; large work gets PRD -> architecture -> stories; complex work adds a challenge pass.
-7. **Disciplines are skills.** TDD, systematic debugging, the Obsidian memory vault, and workflow routing live under `.agents/skills/`.
+7. **Disciplines are skills.** TDD, systematic debugging, the Obsidian memory vault, skill authoring, and workflow routing live under `.agents/skills/`.
 
 ## Conventions
 
@@ -37,10 +37,15 @@ _Unconfigured scaffold - no project bound yet. Run the `greenfield:kickoff` or `
 - Stories: `docs/stories/<NNN>-<slug>.md`. ADRs: `docs/adrs/<NNNN>-<slug>.md`. Postmortems: `docs/postmortems/<YYYY-MM-DD>-<slug>.md`. Learnings: `docs/learnings/<YYYY-MM-DD>-<slug>.md`.
 - Agents are role nouns (`architect`); workflows are verbs or namespaced (`implement`, `greenfield:prd`); skills are disciplines.
 - Custom agent descriptions should be specific enough that Codex can choose or spawn the right agent only when the role fits.
+- **Model-invoked vs. user-invoked.** A skill is model-invoked — reached by trigger-match, never called by name. A workflow or agent is user-invoked — reached only by explicit reference. A user-invoked surface never triggers another user-invoked surface by pattern-matching; it can only name it explicitly. See the `skill-authoring` skill before adding or editing any of the three.
+- **Deferred-corner marker.** When you deliberately cut a corner mid-implementation, leave `# scope: <what was deferred>, <trigger to revisit>` at the site. The `review` and `ship` workflows grep for these and surface any left unresolved before a PR.
+- **Rejected-request ledger.** `docs/out-of-scope/<slug>.md` holds asks that were deliberately descoped or rejected (one file per ask, one-line reason + date). `analyst` and `pm` check it before drafting a new brief/PRD.
 
 ## Memory vault
 
 The Obsidian vault at `memory/` is durable cross-session memory, reached through the `obsidian` MCP server configured in `.codex/config.toml` for Codex and `.mcp.json` for Claude Code. `docs/` is the per-task handoff medium; the vault is long-term memory. Prefer MCP tools for vault reads/writes when available.
+
+The vault is used proactively, not just when the user mentions it: `SessionStart` prompts a vault check before assuming a cold start, `PreCompact` prompts a save of anything durable before context is discarded, and `TaskCompleted` prompts a save when a completed task produced something durable. See `.codex/hooks/` / `.codex/INDEX.md` § Hooks.
 
 ## Knowledge verification chain
 

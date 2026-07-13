@@ -72,12 +72,15 @@ Use any of these names with or without a leading slash:
 | `obsidian` | Drives the `memory/` vault via MCP, Obsidian CLI/app actions, and git sync. |
 | `test-driven-development` | RED -> GREEN -> REFACTOR discipline. |
 | `systematic-debugging` | Reproduce -> hypothesize -> falsify -> root cause -> fix and regression. |
+| `skill-authoring` | Invocation-scope check and failure-mode pass for anything added under `.codex/agents/` or `.agents/skills/`. |
 
 ## Hooks - `.codex/hooks/`
 
 | Hook | Event | Does |
 |---|---|---|
-| `session-start.sh` | `SessionStart` | Emits a compact scaffold orientation. `AGENTS.md` remains the authoritative instruction source. |
+| `session-start.sh` | `SessionStart` | Emits a compact scaffold orientation plus a reminder to check the memory vault for relevant prior context. `AGENTS.md` remains the authoritative instruction source. |
+| `pre-compact-memory-sync.sh` | `PreCompact` | Reminds the agent to persist durable decisions/learnings to the memory vault before context is compacted away. |
+| `task-completed-memory-sync.sh` | `TaskCompleted` | Reminds the agent to capture a vault note when a completed task produced something durable. |
 
 ## MCP
 

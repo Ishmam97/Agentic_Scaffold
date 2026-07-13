@@ -85,19 +85,22 @@ Specialists. Delegate context-heavy or parallelizable work to them; keep judgmen
 
 ## Skills — `.claude/skills/`
 
-Disciplines that load on trigger-match and are referenced by agents/commands.
+All model-invoked: loaded on trigger-match against `description`, never called by name. (Agents and commands, above, are user-invoked — reached only by explicit reference. See `skill-authoring` for the full distinction.)
 
 | Skill | Does |
 |---|---|
 | `obsidian` | Drive the `memory/` vault via MCP / CLI / git sync. |
 | `test-driven-development` | RED→GREEN→REFACTOR discipline; operationalizes Rule 9. Referenced by `implementer`, `test-author`, `/implement`. |
 | `systematic-debugging` | Reproduce → hypothesize → falsify → root cause → fix + regression. Referenced by `debugger`, `/brownfield:bugfix`. |
+| `skill-authoring` | Invocation-scope check + failure-mode pass (premature completion, sediment, negation, …) for anything added under `.claude/agents/`, `.claude/commands/`, `.claude/skills/`. |
 
 ## Hooks — `.claude/hooks/` (wired in `.claude/settings.json`)
 
 | Hook | Event | Does |
 |---|---|---|
-| `session-start.sh` | `SessionStart` | Injects a compact scaffold orientation (this index's routing table) so every session starts scaffold-aware. |
+| `session-start.sh` | `SessionStart` | Injects a compact scaffold orientation (routing table + skills table) plus a reminder to check the memory vault for relevant prior context. |
+| `pre-compact-memory-sync.sh` | `PreCompact` | Reminds the agent to persist durable decisions/learnings to the memory vault before context is compacted away. |
+| `task-completed-memory-sync.sh` | `TaskCompleted` | Reminds the agent to capture a vault note when a completed task produced something durable (not every task). |
 
 ## Templates — `templates/`
 

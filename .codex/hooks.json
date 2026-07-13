@@ -12,6 +12,31 @@
           }
         ]
       }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.codex/hooks/pre-compact-memory-sync.sh\"",
+            "timeout": 10,
+            "statusMessage": "Checking for durable context to save"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.codex/hooks/task-completed-memory-sync.sh\"",
+            "timeout": 10,
+            "statusMessage": "Checking for durable context to save"
+          }
+        ]
+      }
     ]
   }
 }

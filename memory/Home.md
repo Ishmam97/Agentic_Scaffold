@@ -19,7 +19,7 @@ Dashboard for this project's memory vault. The durable, cross-task knowledge bas
 
 ## Active features
 
-_None yet. The planner and PM link feature notes here as work starts._
+- [[Cross-Agent Collaboration MCP]] — coordination substrate for heterogeneous coding agents (brief done; PRD blocked on activation spike)
 
 ## Recent decisions
 

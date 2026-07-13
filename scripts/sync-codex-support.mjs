@@ -10,6 +10,7 @@ const managedSkills = [
   "obsidian",
   "systematic-debugging",
   "test-driven-development",
+  "skill-authoring",
   "agentic-swe-workflows",
 ];
 
